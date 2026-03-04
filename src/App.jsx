@@ -1,0 +1,56 @@
+import React, { useState, useEffect } from 'react';
+import Sidebar from './components/Sidebar';
+import Dashboard from './components/Dashboard';
+import './App.css';
+
+const SHEETDB_URL = "https://sheetdb.io/api/v1/y933qp6w0yxj9";
+
+function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch initial clients from SheetDB
+  useEffect(() => {
+    fetch(SHEETDB_URL)
+      .then(res => res.json())
+      .then(data => {
+        setClients(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch clients from SheetDB", err);
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <div className="app-layout">
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <main className="main-content">
+        <header className="top-header">
+          <div className="header-glass glass-card">
+            <h1>מערכת ניהול לקוחות</h1>
+            <div className="user-profile">
+              <span className="user-name">טל שני</span>
+              <div className="user-avatar-small"></div>
+            </div>
+          </div>
+        </header>
+
+        <div className="content-area">
+          {loading ? (
+            <div className="placeholder-view">טוען נתונים מהענן...</div>
+          ) : (
+            <>
+              {activeTab === 'dashboard' && <Dashboard clients={clients} setClients={setClients} SHEETDB_URL={SHEETDB_URL} />}
+              {activeTab === 'settings' && <div className="placeholder-view">הגדרות המערכת יעודכנו בקרוב...</div>}
+            </>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default App;
