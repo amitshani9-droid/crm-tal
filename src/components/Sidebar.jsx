@@ -3,6 +3,7 @@ import React from 'react';
 function Sidebar({ activeTab, setActiveTab }) {
     const menuItems = [
         { id: 'dashboard', label: 'דשבורד ראשי', icon: '📊' },
+        { id: 'leadform', label: 'טופס לידים חיצוני', icon: '📝' },
         { id: 'settings', label: 'הגדרות', icon: '⚙️' }
     ];
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ClientList from './ClientList';
 import ClientProfile from './ClientProfile';
 import StatisticsHeader from './StatisticsHeader';
+import MondayTable from './MondayTable';
 
 function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     const [selectedClient, setSelectedClient] = useState(null);
@@ -74,6 +75,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     const handleAddClient = () => {
         const newClient = {
             id: Date.now().toString(),
+            status: "חדש",
             contact: "",
             phone: "",
             email: "",
@@ -88,10 +90,10 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     };
 
     const exportToSheets = (clientsToExport) => {
-        const headers = ["איש קשר,טלפון,מייל,תפקיד,חברה,שיחה אחרונה\n"];
+        const headers = ["סטטוס,איש קשר,טלפון,מייל,תפקיד,חברה,שיחה אחרונה\n"];
         const rows = clientsToExport.map(c => {
             const historySafe = c.history ? c.history.replace(/"/g, '""') : "";
-            return `"${c.contact || ''}","${c.phone || ''}","${c.email || ''}","${c.role || ''}","${c.company || ''}","${historySafe}"`;
+            return `"${c.status || 'חדש'}","${c.contact || ''}","${c.phone || ''}","${c.email || ''}","${c.role || ''}","${c.company || ''}","${historySafe}"`;
         }).join("\n");
 
         const blob = new Blob(["\ufeff" + headers + rows], { type: 'text/csv;charset=utf-8;' });
@@ -104,6 +106,14 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     const totalClients = clients.length;
     const callsThisWeek = clients.filter(c => c.nextCall && c.nextCall !== "").length; // Simplified logic, just checking if date exists for demo
 
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayClients = clients.filter(c => c.nextCall && c.nextCall.split('T')[0] === todayStr);
+
+    const newClients = clients.filter(c => c.status === 'חדש' || !c.status);
+    const inProgressClients = clients.filter(c => c.status === 'בטיפול');
+    const closedClients = clients.filter(c => c.status === 'סגור');
+
+    // Remove duplicates from today's list visually if treating as a separate table
     return (
         <div className="dashboard">
             <StatisticsHeader clients={clients} />
@@ -123,7 +133,27 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                 </div>
             </div>
 
-            <ClientList clients={clients} onClientClick={handleOpenProfile} />
+            {todayClients.length > 0 && (
+                <div className="pipeline-section focus-section glass-card">
+                    <h2 className="pipeline-title"><span className="icon pulse-icon">🚨</span> לטיפול היום!</h2>
+                    <MondayTable clients={todayClients} onClientClick={handleOpenProfile} />
+                </div>
+            )}
+
+            <div className="pipeline-section">
+                <h2 className="pipeline-title"><span className="status-dot new"></span> לידים חדשים ({newClients.length})</h2>
+                <MondayTable clients={newClients} onClientClick={handleOpenProfile} />
+            </div>
+
+            <div className="pipeline-section">
+                <h2 className="pipeline-title"><span className="status-dot in-progress"></span> בטיפול אקטיבי ({inProgressClients.length})</h2>
+                <MondayTable clients={inProgressClients} onClientClick={handleOpenProfile} />
+            </div>
+
+            <div className="pipeline-section">
+                <h2 className="pipeline-title"><span className="status-dot closed"></span> לקוחות שנסגרו ({closedClients.length})</h2>
+                <MondayTable clients={closedClients} onClientClick={handleOpenProfile} />
+            </div>
 
             <ClientProfile
                 client={selectedClient}

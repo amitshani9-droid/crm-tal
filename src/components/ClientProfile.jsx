@@ -105,6 +105,18 @@ function ClientProfile({ client, isOpen, onClose, onSave }) {
                     {/* Info Grid */}
                     <div className="info-grid">
                         <div className="info-group">
+                            <label>סטטוס</label>
+                            <select
+                                className="glass-input"
+                                value={formData.status || 'חדש'}
+                                onChange={e => handleChange('status', e.target.value)}
+                            >
+                                <option value="חדש">🔵 חדש</option>
+                                <option value="בטיפול">🟠 בטיפול</option>
+                                <option value="סגור">🟢 סגור</option>
+                            </select>
+                        </div>
+                        <div className="info-group">
                             <label>טלפון</label>
                             <input
                                 type="tel"
