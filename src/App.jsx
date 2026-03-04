@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import LeadForm from './components/LeadForm';
@@ -22,12 +23,6 @@ function App() {
     }
   }, []);
 
-  // Check for public standalone routes before any authentication or CRM rendering
-  const path = window.location.pathname;
-  if (path === '/join' || path === '/contact' || path === '/lead-form') {
-    return <PublicLeadForm />;
-  }
-
   // Fetch clients from SheetDB
   const fetchClients = async () => {
     try {
@@ -45,48 +40,52 @@ function App() {
     }
   }, [isAuthenticated]);
 
-  // If not authenticated, show login page exclusively
-  if (!isAuthenticated) {
-    return <LoginPage onLoginSuccess={() => setIsAuthenticated(true)} />;
-  }
-
   return (
-    <div className="app-layout">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <main className="main-content">
-        <header className="top-header">
-          <div className="header-glass glass-card">
-            <h1>מערכת ניהול לקוחות</h1>
-            <div className="user-profile">
-              <span className="user-name">טל שני</span>
-              <div className="user-avatar-small"></div>
-              {/* Optional: Add logout logic here */}
-              <button
-                onClick={() => {
-                  localStorage.removeItem('crm_auth_token');
-                  setIsAuthenticated(false);
-                }}
-                style={{ marginLeft: '10px', fontSize: '0.8rem', color: 'var(--clr-text-secondary)', cursor: 'pointer', background: 'none', border: 'none' }}
-              >
-                התנתק
-              </button>
-            </div>
-          </div>
-        </header>
+    <Routes>
+      <Route path="/join" element={<PublicLeadForm />} />
+      <Route path="*" element={
+        !isAuthenticated ? (
+          <LoginPage onLoginSuccess={() => setIsAuthenticated(true)} />
+        ) : (
+          <div className="app-layout">
+            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+            <main className="main-content">
+              <header className="top-header">
+                <div className="header-glass glass-card">
+                  <h1>מערכת ניהול לקוחות</h1>
+                  <div className="user-profile">
+                    <span className="user-name">טל שני</span>
+                    <div className="user-avatar-small"></div>
+                    {/* Logout Button */}
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem('crm_auth_token');
+                        setIsAuthenticated(false);
+                      }}
+                      style={{ marginLeft: '10px', fontSize: '0.8rem', color: 'var(--clr-text-secondary)', cursor: 'pointer', background: 'none', border: 'none' }}
+                    >
+                      התנתק
+                    </button>
+                  </div>
+                </div>
+              </header>
 
-        <div className="content-area">
-          {loading ? (
-            <div className="placeholder-view">טוען נתונים מהענן...</div>
-          ) : (
-            <>
-              {activeTab === 'dashboard' && <Dashboard clients={clients} setClients={setClients} SHEETDB_URL={SHEETDB_URL} fetchClients={fetchClients} />}
-              {activeTab === 'settings' && <div className="placeholder-view">הגדרות המערכת יעודכנו בקרוב...</div>}
-              {activeTab === 'leadform' && <LeadForm SHEETDB_URL={SHEETDB_URL} onBack={() => setActiveTab('dashboard')} />}
-            </>
-          )}
-        </div>
-      </main>
-    </div>
+              <div className="content-area">
+                {loading ? (
+                  <div className="placeholder-view">טוען נתונים מהענן...</div>
+                ) : (
+                  <>
+                    {activeTab === 'dashboard' && <Dashboard clients={clients} setClients={setClients} SHEETDB_URL={SHEETDB_URL} fetchClients={fetchClients} />}
+                    {activeTab === 'settings' && <div className="placeholder-view">הגדרות המערכת יעודכנו בקרוב...</div>}
+                    {activeTab === 'leadform' && <LeadForm SHEETDB_URL={SHEETDB_URL} onBack={() => setActiveTab('dashboard')} />}
+                  </>
+                )}
+              </div>
+            </main>
+          </div>
+        )
+      } />
+    </Routes>
   );
 }
 

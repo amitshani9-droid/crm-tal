@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './LoginPage.css';
 
 // Hardcoded Password - easy to change here
-const MASTER_PASSWORD = "Tal2026";
+const MASTER_PASSWORD = "tal0203";
 
 export default function LoginPage({ onLoginSuccess }) {
     const [password, setPassword] = useState('');
