@@ -16,7 +16,7 @@ function ClientCard({ client, onClick }) {
         <div className="client-card glass-card" onClick={onClick}>
             <div className="card-header">
                 <div className="avatar">
-                    <img src={avatarPath} alt={client.contactPerson} onError={(e) => {
+                    <img src={avatarPath} alt={client.contact} onError={(e) => {
                         e.target.onerror = null;
                         // Fallback generated CSS gradient if image missing
                         e.target.style.display = 'none';
@@ -24,8 +24,8 @@ function ClientCard({ client, onClick }) {
                     }} />
                 </div>
                 <div className="client-titles">
-                    <h3 className="client-name">{client.contactPerson || "לקוח חדש"}</h3>
-                    <p className="client-company">{client.companyName || "ללא חברה"}</p>
+                    <h3 className="client-name">{client.contact || "לקוח חדש"}</h3>
+                    <p className="client-company">{client.company || "ללא חברה"}</p>
                 </div>
             </div>
 
@@ -40,11 +40,11 @@ function ClientCard({ client, onClick }) {
                 </div>
             </div>
 
-            {client.nextCallDate && (
+            {client.nextCall && (
                 <div className="card-footer">
                     <div className="next-call-badge">
                         <span className="icon">🗓️</span>
-                        <span>שיחה הבאה: {formatNextCall(client.nextCallDate)}</span>
+                        <span>שיחה הבאה: {formatNextCall(client.nextCall)}</span>
                     </div>
                 </div>
             )}

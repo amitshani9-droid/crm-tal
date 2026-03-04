@@ -3,10 +3,12 @@ import ClientList from './ClientList';
 import ClientProfile from './ClientProfile';
 import StatisticsHeader from './StatisticsHeader';
 
-function Dashboard({ clients, setClients, SHEETDB_URL }) {
+function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     const [selectedClient, setSelectedClient] = useState(null);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [refreshSuccess, setRefreshSuccess] = useState(false);
 
     const handleOpenProfile = (client) => {
         setSelectedClient(client);
@@ -17,6 +19,15 @@ function Dashboard({ clients, setClients, SHEETDB_URL }) {
         setIsProfileOpen(false);
         // Delay clearing the selected client to allow slide-out animation to finish smoothly
         setTimeout(() => setSelectedClient(null), 300);
+    };
+
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        setRefreshSuccess(false);
+        if (fetchClients) await fetchClients();
+        setIsRefreshing(false);
+        setRefreshSuccess(true);
+        setTimeout(() => setRefreshSuccess(false), 3000);
     };
 
     const handleSaveClient = async (updatedClient) => {
@@ -63,13 +74,13 @@ function Dashboard({ clients, setClients, SHEETDB_URL }) {
     const handleAddClient = () => {
         const newClient = {
             id: Date.now().toString(),
-            contactPerson: "",
+            contact: "",
             phone: "",
             email: "",
             role: "",
-            companyName: "",
-            conversationHistory: "",
-            nextCallDate: "",
+            company: "",
+            history: "",
+            nextCall: "",
             documents: [],
             avatarIndex: Math.floor(Math.random() * 3) + 1
         };
@@ -79,8 +90,8 @@ function Dashboard({ clients, setClients, SHEETDB_URL }) {
     const exportToSheets = (clientsToExport) => {
         const headers = ["איש קשר,טלפון,מייל,תפקיד,חברה,שיחה אחרונה\n"];
         const rows = clientsToExport.map(c => {
-            const historySafe = c.conversationHistory ? c.conversationHistory.replace(/"/g, '""') : "";
-            return `"${c.contactPerson || ''}","${c.phone || ''}","${c.email || ''}","${c.role || ''}","${c.companyName || ''}","${historySafe}"`;
+            const historySafe = c.history ? c.history.replace(/"/g, '""') : "";
+            return `"${c.contact || ''}","${c.phone || ''}","${c.email || ''}","${c.role || ''}","${c.company || ''}","${historySafe}"`;
         }).join("\n");
 
         const blob = new Blob(["\ufeff" + headers + rows], { type: 'text/csv;charset=utf-8;' });
@@ -91,7 +102,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL }) {
     };
 
     const totalClients = clients.length;
-    const callsThisWeek = clients.filter(c => c.nextCallDate !== "").length; // Simplified logic, just checking if date exists for demo
+    const callsThisWeek = clients.filter(c => c.nextCall && c.nextCall !== "").length; // Simplified logic, just checking if date exists for demo
 
     return (
         <div className="dashboard">
@@ -99,6 +110,10 @@ function Dashboard({ clients, setClients, SHEETDB_URL }) {
 
             <div className="dashboard-actions-row">
                 <div className="dashboard-actions">
+                    {refreshSuccess && <span className="refresh-toast">עודכן בהצלחה!</span>}
+                    <button className="btn-secondary btn-glass" onClick={handleRefresh} disabled={isRefreshing} style={{ marginLeft: 'var(--space-md)' }}>
+                        <span className={`icon ${isRefreshing ? 'spin-animation' : ''}`}>🔄</span> רענן נתונים
+                    </button>
                     <button className="btn-secondary" onClick={() => exportToSheets(clients)} style={{ marginLeft: 'var(--space-md)' }}>
                         📊 ייצוא הלקוחות (CSV)
                     </button>

@@ -10,18 +10,19 @@ function App() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch initial clients from SheetDB
+  // Fetch clients from SheetDB
+  const fetchClients = async () => {
+    try {
+      const res = await fetch(SHEETDB_URL);
+      const data = await res.json();
+      setClients(data);
+    } catch (err) {
+      console.error("Failed to fetch clients from SheetDB", err);
+    }
+  };
+
   useEffect(() => {
-    fetch(SHEETDB_URL)
-      .then(res => res.json())
-      .then(data => {
-        setClients(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to fetch clients from SheetDB", err);
-        setLoading(false);
-      });
+    fetchClients().then(() => setLoading(false));
   }, []);
 
   return (
@@ -43,7 +44,7 @@ function App() {
             <div className="placeholder-view">טוען נתונים מהענן...</div>
           ) : (
             <>
-              {activeTab === 'dashboard' && <Dashboard clients={clients} setClients={setClients} SHEETDB_URL={SHEETDB_URL} />}
+              {activeTab === 'dashboard' && <Dashboard clients={clients} setClients={setClients} SHEETDB_URL={SHEETDB_URL} fetchClients={fetchClients} />}
               {activeTab === 'settings' && <div className="placeholder-view">הגדרות המערכת יעודכנו בקרוב...</div>}
             </>
           )}

@@ -6,8 +6,8 @@ function StatisticsHeader({ clients }) {
     // Calculate calls scheduled for today
     const todayStr = new Date().toISOString().split('T')[0];
     const callsToday = clients.filter(c => {
-        if (!c.nextCallDate) return false;
-        return c.nextCallDate.split('T')[0] === todayStr;
+        if (!c.nextCall) return false;
+        return c.nextCall.split('T')[0] === todayStr;
     }).length;
 
     // Calculate new clients from the last 30 days
@@ -25,7 +25,7 @@ function StatisticsHeader({ clients }) {
 
     // We can add a 4th metric, like total scheduled calls or something else if needed.
     // Let's use "Total Scheduled Calls" for the 4th card based on the existing logic
-    const allExpectedCalls = clients.filter(c => c.nextCallDate !== "").length;
+    const allExpectedCalls = clients.filter(c => c.nextCall && c.nextCall !== "").length;
 
     return (
         <div className="stats-row">
