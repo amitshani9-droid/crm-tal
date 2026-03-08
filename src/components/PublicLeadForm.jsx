@@ -4,9 +4,21 @@ import './PublicLeadForm.css';
 const SHEETDB_URL = "https://sheetdb.io/api/v1/y933qp6w0yxj9";
 
 export default function PublicLeadForm() {
+    // Dynamic Settings: Allow override via Dashboard, else use defaults
+    const isMaintenance = localStorage.getItem('crm_maintenance_mode') === 'true';
+    const thankYouMsg = localStorage.getItem('crm_thank_you_msg') || 'תודה! הפנייה התקבלו. נחזור אליכם קרוב ליצירת חוויה משותפת.';
+    const savedBusinessName = localStorage.getItem('crm_business_name');
+    
+    // Core Branding (Fixed per request)
+    const brandingTitle = "טל שני | חוויות שמחברות אנשים";
+    const mainHeadline = "ימי גיבוש ואירועי חברה בהתאמה אישית";
+    const description = "סטייל, תוכן וערך חברתי שנשאר הרבה אחרי שהאירוע נגמר. אני יוצרת חוויות לארגונים שמחפשים יותר מעוד אירוע – ימים שמחברים בין אנשים, צוותים ותחושת משמעות.";
+    const buttonText = "בואו נחבר את האנשים שלכם";
+
     const [formData, setFormData] = useState({
         contact: '',
         phone: '',
+        email: '',
         company: ''
     });
 
@@ -22,10 +34,13 @@ export default function PublicLeadForm() {
         e.preventDefault();
         setIsLoading(true);
 
+        // Generate unique ID
+        const uniqueId = Date.now().toString();
+
         const payload = {
-            id: Date.now(),
+            id: uniqueId,
             ...formData,
-            status: 'חדש' // Automatically set to new lead status
+            status: 'חדש' // Standard status for new leads
         };
 
         try {
@@ -51,82 +66,118 @@ export default function PublicLeadForm() {
         }
     };
 
+    /**
+     * SUCCESS VIEW
+     */
     if (isSubmitted) {
         return (
             <div className="public-form-container">
-                <div className="glass-card success-card">
-                    <div className="success-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                    </div>
-                    <h2>תודה!</h2>
-                    <p>הפרטים התקבלו בהצלחה ונחזור אליך בהקדם.</p>
+                <div className="public-form-card success-card">
+                    <div className="success-icon">✨</div>
+                    <h2>נשלח בהצלחה!</h2>
+                    <p>{thankYouMsg}</p>
                 </div>
             </div>
         );
     }
 
+    /**
+     * MAINTENANCE VIEW
+     */
+    if (isMaintenance) {
+        return (
+            <div className="public-form-container">
+                <div className="public-form-card maintenance-card">
+                    <div className="success-icon">⚙️</div>
+                    <h2>מבצעים תחזוקה</h2>
+                    <p>הטופס אינו פעיל זמנית. נחזור בקרוב מאוד!</p>
+                </div>
+            </div>
+        );
+    }
+
+    /**
+     * MAIN LANDING PAGE VIEW
+     */
     return (
         <div className="public-form-container">
-            <div className="glass-card public-form-card">
-                <div className="public-form-header">
-                    <h1>הצטרפו אלינו</h1>
-                    <p>מלאו את הפרטים ונחזור אליכם בהקדם</p>
+            <div className="public-form-card">
+                {/* Branding & Marketing */}
+                <div className="branding-header">
+                    <span>{brandingTitle}</span>
+                </div>
+                
+                <div className="marketing-text">
+                    <h1>{mainHeadline}</h1>
+                    <p>{description}</p>
                 </div>
 
+                {/* Modern Form Wrapper */}
                 <form onSubmit={handleSubmit} className="public-lead-form">
                     <div className="form-group">
-                        <label>איש קשר *</label>
-                        <input
-                            type="text"
-                            name="contact"
-                            required
-                            placeholder="ישראל ישראלי"
-                            value={formData.contact}
-                            onChange={handleChange}
-                        />
+                        <label>שם מלא *</label>
+                        <div className="input-with-icon">
+                            <input
+                                type="text"
+                                name="contact"
+                                required
+                                placeholder="ישראל ישראלי"
+                                value={formData.contact}
+                                onChange={handleChange}
+                            />
+                            <span className="input-icon">👤</span>
+                        </div>
                     </div>
 
                     <div className="form-group">
                         <label>טלפון *</label>
-                        <input
-                            type="tel"
-                            name="phone"
-                            required
-                            placeholder="050-0000000"
-                            value={formData.phone}
-                            onChange={handleChange}
-                        />
+                        <div className="input-with-icon">
+                            <input
+                                type="tel"
+                                name="phone"
+                                required
+                                placeholder="050-0000000"
+                                value={formData.phone}
+                                onChange={handleChange}
+                            />
+                            <span className="input-icon">📱</span>
+                        </div>
                     </div>
 
                     <div className="form-group">
-                        <label>חברה</label>
-                        <input
-                            type="text"
-                            name="company"
-                            placeholder="שם החברה"
-                            value={formData.company}
-                            onChange={handleChange}
-                        />
+                        <label>אימייל *</label>
+                        <div className="input-with-icon">
+                            <input
+                                type="email"
+                                name="email"
+                                required
+                                placeholder="email@example.com"
+                                value={formData.email}
+                                onChange={handleChange}
+                            />
+                            <span className="input-icon">✉️</span>
+                        </div>
                     </div>
 
-                    <button type="submit" className="btn-primary submit-btn" disabled={isLoading}>
+                    <div className="form-group">
+                        <label>שם החברה / הארגון *</label>
+                        <div className="input-with-icon">
+                            <input
+                                type="text"
+                                name="company"
+                                required
+                                placeholder="שם החברה..."
+                                value={formData.company}
+                                onChange={handleChange}
+                            />
+                            <span className="input-icon">🏢</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" className="submit-btn" disabled={isLoading}>
                         {isLoading ? (
-                            <span className="spin-animation">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <line x1="12" y1="2" x2="12" y2="6"></line>
-                                    <line x1="12" y1="18" x2="12" y2="22"></line>
-                                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-                                    <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-                                    <line x1="2" y1="12" x2="6" y2="12"></line>
-                                    <line x1="18" y1="12" x2="22" y2="12"></line>
-                                    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-                                    <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-                                </svg>
-                            </span>
-                        ) : "שליחה"}
+                            <span className="spin-animation">◌</span>
+                        ) : buttonText}
                     </button>
                 </form>
             </div>

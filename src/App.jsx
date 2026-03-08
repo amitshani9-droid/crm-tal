@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import LeadForm from './components/LeadForm';
 import PublicLeadForm from './components/PublicLeadForm';
 import LoginPage from './components/LoginPage';
+import Settings from './components/Settings';
 import './App.css';
 
 const SHEETDB_URL = "https://sheetdb.io/api/v1/y933qp6w0yxj9";
@@ -14,6 +15,7 @@ function App() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [businessName, setBusinessName] = useState(localStorage.getItem('crm_business_name') || 'טל שני - הפקת אירועים');
 
   // Check storage on load
   useEffect(() => {
@@ -21,6 +23,13 @@ function App() {
     if (authStatus === 'authenticated') {
       setIsAuthenticated(true);
     }
+
+    // Listener for settings changes (like business name)
+    const handleStorageChange = () => {
+      setBusinessName(localStorage.getItem('crm_business_name') || 'טל שני - הפקת אירועים');
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   // Fetch clients from SheetDB
@@ -59,7 +68,7 @@ function App() {
             <main className="main-content">
               <header className="top-header">
                 <div className="header-glass glass-card">
-                  <h1>מערכת ניהול לקוחות</h1>
+                  <h1>{businessName}</h1>
                   <div className="user-profile">
                     <span className="user-name">טל שני</span>
                     <div className="user-avatar-small"></div>
@@ -83,7 +92,7 @@ function App() {
                 ) : (
                   <>
                     {activeTab === 'dashboard' && <Dashboard clients={clients} setClients={setClients} SHEETDB_URL={SHEETDB_URL} fetchClients={fetchClients} />}
-                    {activeTab === 'settings' && <div className="placeholder-view">הגדרות המערכת יעודכנו בקרוב...</div>}
+                    {activeTab === 'settings' && <Settings clients={clients} />}
                     {activeTab === 'leadform' && <LeadForm SHEETDB_URL={SHEETDB_URL} onBack={() => setActiveTab('dashboard')} />}
                   </>
                 )}

@@ -13,9 +13,11 @@ export default function LoginPage({ onLoginSuccess }) {
         e.preventDefault();
         setLoading(true);
 
+        const savedPassword = localStorage.getItem('crm_master_password') || 'tal0203';
+
         // Simulate slight delay for premium feel
         setTimeout(() => {
-            if (password === MASTER_PASSWORD) {
+            if (password === savedPassword) {
                 setError(false);
                 // Store session in localStorage so user stays logged in
                 localStorage.setItem('crm_auth_token', 'authenticated');
