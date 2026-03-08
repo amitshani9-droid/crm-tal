@@ -43,15 +43,20 @@ function ClientProfile({ client, isOpen, onClose, onSave }) {
             alert("לא הוזן מספר טלפון ללקוח זה.");
             return;
         }
-        // Clean phone number (remove dashes, spaces, etc.)
-        let cleanPhone = client.phone.replace(/\D/g, '');
-        // Prefix with Israel country code if it starts with '0'
+        
+        // 1. Clean Phone: Remove ', - and spaces
+        const rawPhone = client.phone || "";
+        const cleanPhone = rawPhone.replace(/['\s-]/g, '');
+        
+        // 2. Format: If starts with '0', prepend 972
+        let finalPhone = cleanPhone;
         if (cleanPhone.startsWith('0')) {
-            cleanPhone = '972' + cleanPhone.substring(1);
+            finalPhone = '972' + cleanPhone.substring(1);
         }
 
-        const message = `היי ${client.contact || 'מידע חסר'}, `;
-        window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+        const message = `היי ${client.contact || 'שם הלקוח'}, `;
+        const url = `https://wa.me/${finalPhone}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
     };
 
     return (

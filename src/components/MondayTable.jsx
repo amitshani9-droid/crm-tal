@@ -55,17 +55,18 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient })
                                     <span>{client.phone?.startsWith("'") ? client.phone.substring(1) : (client.phone || "-")}</span>
                                     {client.phone && (
                                         <button 
-                                            className="whatsapp-quick-btn"
+                                            className="whatsapp-pill-btn"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                const cleanPhone = client.phone.replace(/'/g, '').replace(/\D/g, '');
-                                                const finalPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.substring(1) : cleanPhone;
+                                                const cleanNumber = client.phone.replace(/\D/g, '').replace(/^0/, '972');
                                                 const message = `היי ${client.contact || 'שם הלקוח'}, כאן טל מ-Tali's Events, אשמח לתת לך פרטים על יום הגיבוש שלנו!`;
-                                                window.open(`https://wa.me/${finalPhone}?text=${encodeURIComponent(message)}`, '_blank');
+                                                const url = `https://api.whatsapp.com/send?phone=${cleanNumber}&text=${encodeURIComponent(message)}`;
+                                                window.open(url, '_blank');
                                             }}
-                                            title="שלח הודעת וואטסאפ מהירה"
+                                            title="שלח הודעת וואטסאפ"
                                         >
-                                            🟢
+                                            <span className="wa-icon">💬</span>
+                                            <span className="wa-text">שלח הודעה</span>
                                         </button>
                                     )}
                                 </div>
@@ -74,13 +75,16 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient })
                             <td>{formatNextCall(client.nextCall)}</td>
                             <td className="status-cell" onClick={(e) => e.stopPropagation()}>
                                 <select 
-                                    className={`status-select-mini ${client.status === 'חדש' ? 'new' : client.status === 'בטיפול' ? 'in-progress' : 'closed'}`}
+                                    className={`status-select-mini ${
+                                        String(client.status) === 'סגור' ? 'closed' : 
+                                        String(client.status) === 'בטיפול' ? 'in-progress' : 'new'
+                                    }`}
                                     value={client.status || 'חדש'}
                                     onChange={(e) => onStatusChange(client.id, e.target.value)}
                                 >
-                                    <option value="חדש">🔵 חדש</option>
-                                    <option value="בטיפול">🟠 בטיפול</option>
-                                    <option value="סגור">🟢 סגור</option>
+                                    <option value="חדש">חדש</option>
+                                    <option value="בטיפול">בטיפול</option>
+                                    <option value="סגור">סגור</option>
                                 </select>
                             </td>
                             <td className="actions-cell" onClick={(e) => e.stopPropagation()}>

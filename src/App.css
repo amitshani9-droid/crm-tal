@@ -1298,38 +1298,34 @@
     width: 100%;
 }
 
-.whatsapp-quick-btn {
-    background: #22c55e;
+.whatsapp-pill-btn {
+    background: #25D366;
+    color: white;
     border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    border-radius: 20px;
+    padding: 6px 14px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 11px;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(34, 197, 94, 0.2);
-    opacity: 0.8;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
 }
 
-.whatsapp-quick-btn:hover {
-    transform: scale(1.15);
-    opacity: 1;
-    background: #16a34a;
-    box-shadow: 0 4px 8px rgba(34, 197, 94, 0.4);
+.whatsapp-pill-btn:hover {
+    background: #128C7E;
+    transform: scale(1.05) translateY(-1px);
+    box-shadow: 0 6px 15px rgba(18, 140, 126, 0.4);
+}
+
+.wa-icon {
+    font-size: 1rem;
 }
 
 .btn-icon-excel {
     color: #166534; /* Excel Green */
-}
-
-/* ----------------------------------
-   Spacing Improvements
------------------------------------ */
-.pipeline-section {
-    margin-top: 50px;
 }
 
 /* ----------------------------------
@@ -1381,6 +1377,61 @@
 
 .nav-item .icon {
     font-size: 1.2rem;
+}
+
+/* ----------------------------------
+   Spacing Improvements
+----------------------------------- */
+.pipeline-section {
+    margin-top: 50px;
+}
+
+/* ----------------------------------
+   Professional Status Badges
+----------------------------------- */
+.status-select-mini {
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: center;
+    width: 100%;
+}
+
+.status-select-mini.new {
+    background: #f3e8ff !important;
+    color: #7e22ce !important;
+}
+
+.status-select-mini.in-progress {
+    background: #ffedd5 !important;
+    color: #c2410c !important;
+}
+
+.status-select-mini.closed {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+}
+
+.status-select-mini:hover {
+    transform: translateY(-1px);
+    filter: brightness(0.95);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.status-badge-compact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.8rem;
 }
 
 
