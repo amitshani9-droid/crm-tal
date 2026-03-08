@@ -11,7 +11,7 @@ export default function PublicLeadForm() {
     
     // Core Branding (Fixed per request)
     const brandingTitle = "טל שני | חוויות שמחברות אנשים";
-    const mainHeadline = "ימי גיבוש של כיף וערך חברתי";
+    const mainHeadline = "חוויות עם ערך שמחברות אנשים";
     const description = "סטייל, תוכן וערך חברתי שנשאר הרבה אחרי שהאירוע נגמר. אני יוצרת חוויות לארגונים שמחפשים יותר מעוד אירוע – ימים שמחברים בין אנשים, צוותים ותחושת משמעות.";
     const buttonText = "בואו נחבר את האנשים שלכם";
 
