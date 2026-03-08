@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
-import LeadForm from './components/LeadForm';
 import PublicLeadForm from './components/PublicLeadForm';
 import LoginPage from './components/LoginPage';
 import Settings from './components/Settings';
