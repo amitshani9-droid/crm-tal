@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import ClientList from './ClientList';
 import ClientProfile from './ClientProfile';
-import StatisticsHeader from './StatisticsHeader';
 import MondayTable from './MondayTable';
+import StatisticsBento from './StatisticsBento';
 
 function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     const [selectedClient, setSelectedClient] = useState(null);
@@ -10,6 +9,22 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     const [isSaving, setIsSaving] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [refreshSuccess, setRefreshSuccess] = useState(false);
+
+    // Calculate Bento Stats
+    const totalClients = clients.length;
+    
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const newLeads = clients.filter(c => {
+        const timestamp = parseInt(c.id, 10);
+        return !isNaN(timestamp) && timestamp >= sevenDaysAgo.getTime();
+    }).length;
+
+    const activePipeline = clients.filter(c => c.status === 'בטיפול').length;
+    const closedDeals = clients.filter(c => c.status === 'סגור').length;
+    
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todoToday = clients.filter(c => c.nextCall && c.nextCall.split('T')[0] === todayStr).length;
 
     const handleOpenProfile = (client) => {
         setSelectedClient(client);
@@ -31,17 +46,24 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
         setTimeout(() => setRefreshSuccess(false), 3000);
     };
 
+    /**
+     * CRITICAL FIX: Isolated Status Change
+     * Updates ONLY the specific client in the local state (Optimistic)
+     * and sends a targeted PATCH request to SheetDB.
+     */
     const handleStatusChange = async (clientId, newStatus) => {
-        // 1. Snapshot previous state for rollback
-        const previousClients = [...clients];
+        // Snapshot current state for rollback if server call fails
+        const previousSnapshot = [...clients];
 
-        // 2. Optimistic Update (Immediate UI response)
-        setClients(prev => prev.map(client =>
-            client.id === clientId ? { ...client, status: newStatus } : client
+        // 1. ISOLATED OPTIMISTIC UPDATE:
+        // Match ONLY the specific client's id. Fallback IDs from App.jsx make this reliable.
+        setClients(prev => prev.map(c => 
+            c.id === clientId ? { ...c, status: newStatus } : c
         ));
 
         try {
-            // 3. Sync with SheetDB using the unique ID
+            // 2. BACKEND SYNC (Targeted PATCH)
+            // sheetDB endpoint format: /api/v1/{API_KEY}/id/{ID_VALUE}
             const response = await fetch(`${SHEETDB_URL}/id/${clientId}`, {
                 method: 'PATCH',
                 headers: {
@@ -51,11 +73,12 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                 body: JSON.stringify({ data: { status: newStatus } })
             });
 
-            if (!response.ok) throw new Error("Server error");
+            if (!response.ok) throw new Error("Backend update failed");
+
         } catch (error) {
-            console.error("Error updating status in SheetDB", error);
-            // 4. Rollback UI on failure
-            setClients(previousClients);
+            console.error("Isolated status update failed", error);
+            // ROLLBACK: Revert to previous valid state
+            setClients(previousSnapshot);
             alert("העדכון נכשל בענן. הנתונים שוחזרו.");
         }
     };
@@ -101,6 +124,28 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
         }
     };
 
+    const handleDeleteClient = async (clientId) => {
+        if (!window.confirm("האם אתה בטוח שברצונך למחוק את הלקוח? פעולה זו אינה ניתנת לביטול.")) return;
+
+        try {
+            const response = await fetch(`${SHEETDB_URL}/id/${clientId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error("Delete failed");
+
+            // Update local state
+            setClients(prev => prev.filter(client => client.id !== clientId));
+        } catch (error) {
+            console.error("Error deleting client from SheetDB", error);
+            alert("הייתה שגיאה במחיקת הלקוח. אנא נסה שוב.");
+        }
+    };
+
     const handleAddClient = () => {
         const newClient = {
             id: Date.now().toString(),
@@ -132,20 +177,21 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
         link.click();
     };
 
-    const totalClients = clients.length;
-    const callsThisWeek = clients.filter(c => c.nextCall && c.nextCall !== "").length; // Simplified logic, just checking if date exists for demo
-
-    const todayStr = new Date().toISOString().split('T')[0];
     const todayClients = clients.filter(c => c.nextCall && c.nextCall.split('T')[0] === todayStr);
 
     const newClients = clients.filter(c => c.status === 'חדש' || !c.status);
     const inProgressClients = clients.filter(c => c.status === 'בטיפול');
     const closedClients = clients.filter(c => c.status === 'סגור');
 
-    // Remove duplicates from today's list visually if treating as a separate table
     return (
         <div className="dashboard">
-            <StatisticsHeader clients={clients} />
+            <StatisticsBento 
+                totalClients={totalClients}
+                newLeads={newLeads}
+                activePipeline={activePipeline}
+                closedDeals={closedDeals}
+                todoToday={todoToday}
+            />
 
             <div className="dashboard-actions-row">
                 <div className="dashboard-actions">
@@ -165,23 +211,43 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
             {todayClients.length > 0 && (
                 <div className="pipeline-section focus-section glass-card">
                     <h2 className="pipeline-title"><span className="icon pulse-icon">🚨</span> לטיפול היום!</h2>
-                    <MondayTable clients={todayClients} onClientClick={handleOpenProfile} onStatusChange={handleStatusChange} />
+                    <MondayTable 
+                        clients={todayClients} 
+                        onClientClick={handleOpenProfile} 
+                        onStatusChange={handleStatusChange} 
+                        onDeleteClient={handleDeleteClient}
+                    />
                 </div>
             )}
 
             <div className="pipeline-section">
                 <h2 className="pipeline-title"><span className="status-dot new"></span> לידים חדשים ({newClients.length})</h2>
-                <MondayTable clients={newClients} onClientClick={handleOpenProfile} onStatusChange={handleStatusChange} />
+                <MondayTable 
+                    clients={newClients} 
+                    onClientClick={handleOpenProfile} 
+                    onStatusChange={handleStatusChange} 
+                    onDeleteClient={handleDeleteClient}
+                />
             </div>
 
             <div className="pipeline-section">
                 <h2 className="pipeline-title"><span className="status-dot in-progress"></span> בטיפול אקטיבי ({inProgressClients.length})</h2>
-                <MondayTable clients={inProgressClients} onClientClick={handleOpenProfile} onStatusChange={handleStatusChange} />
+                <MondayTable 
+                    clients={inProgressClients} 
+                    onClientClick={handleOpenProfile} 
+                    onStatusChange={handleStatusChange} 
+                    onDeleteClient={handleDeleteClient}
+                />
             </div>
 
             <div className="pipeline-section">
                 <h2 className="pipeline-title"><span className="status-dot closed"></span> לקוחות שנסגרו ({closedClients.length})</h2>
-                <MondayTable clients={closedClients} onClientClick={handleOpenProfile} onStatusChange={handleStatusChange} />
+                <MondayTable 
+                    clients={closedClients} 
+                    onClientClick={handleOpenProfile} 
+                    onStatusChange={handleStatusChange} 
+                    onDeleteClient={handleDeleteClient}
+                />
             </div>
 
             <ClientProfile
@@ -193,7 +259,6 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
             />
         </div>
     );
-
 }
 
 export default Dashboard;

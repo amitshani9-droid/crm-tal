@@ -23,6 +23,7 @@ export default function PublicLeadForm() {
         setIsLoading(true);
 
         const payload = {
+            id: Date.now(),
             ...formData,
             status: 'חדש' // Automatically set to new lead status
         };

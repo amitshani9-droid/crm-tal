@@ -28,7 +28,14 @@ function App() {
     try {
       const res = await fetch(SHEETDB_URL);
       const data = await res.json();
-      setClients(data);
+      
+      // Critical Fix: Ensure every row has a unique ID
+      const sanitizedData = data.map((item, index) => ({
+        ...item,
+        id: item.id || `row-${index}` // Use existing ID or fallback to index
+      }));
+      
+      setClients(sanitizedData);
     } catch (err) {
       console.error("Failed to fetch clients from SheetDB", err);
     }

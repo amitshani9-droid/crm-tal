@@ -1,6 +1,10 @@
 import React from 'react';
 
-function MondayTable({ clients, onClientClick, onStatusChange }) {
+/**
+ * MondayTable Component
+ * Displays a list of clients in a Monday.com style table with isolated row actions.
+ */
+function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient }) {
     if (!clients || clients.length === 0) {
         return <div className="placeholder-view">אין לקוחות להצגה בתצוגה זו.</div>;
     }
@@ -22,17 +26,26 @@ function MondayTable({ clients, onClientClick, onStatusChange }) {
                         <th>תפקיד</th>
                         <th>שיחה הבאה</th>
                         <th>סטטוס אפיון</th>
+                        <th style={{ width: '80px', textAlign: 'center' }}>פעולות</th>
                     </tr>
                 </thead>
                 <tbody>
                     {clients.map(client => (
-                        <tr key={client.id} onClick={() => onClientClick(client)} className="monday-table-row">
+                        <tr 
+                            key={`client-${client.id}`} 
+                            onClick={() => onClientClick(client)} 
+                            className="monday-table-row"
+                        >
                             <td className="contact-cell">
                                 <div className="avatar-mini">
-                                    <img src={`/avatar-${client.avatarIndex}.png`} alt={client.contact} onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        e.target.parentElement.classList.add(`gradient-${client.avatarIndex || 1}`);
-                                    }} />
+                                    <img 
+                                        src={`/avatar-${client.avatarIndex}.png`} 
+                                        alt={client.contact} 
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            e.target.parentElement.classList.add(`gradient-${client.avatarIndex || 1}`);
+                                        }} 
+                                    />
                                 </div>
                                 <span>{client.contact || "לקוח חדש"}</span>
                             </td>
@@ -51,6 +64,15 @@ function MondayTable({ clients, onClientClick, onStatusChange }) {
                                     <option value="סגור">🟢 סגור</option>
                                 </select>
                             </td>
+                            <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
+                                <button 
+                                    className="btn-delete-row" 
+                                    onClick={() => onDeleteClient(client.id)}
+                                    title="מחק לקוח"
+                                >
+                                    🗑️
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -58,5 +80,6 @@ function MondayTable({ clients, onClientClick, onStatusChange }) {
         </div>
     );
 }
+
 
 export default MondayTable;
