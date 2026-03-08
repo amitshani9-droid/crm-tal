@@ -9,6 +9,15 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient })
         return <div className="placeholder-view">אין לקוחות להצגה בתצוגה זו.</div>;
     }
 
+    const getInitials = (name) => {
+        if (!name) return "?";
+        const parts = name.trim().split(" ");
+        if (parts.length > 1) {
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+        return parts[0][0].toUpperCase();
+    };
+
     const formatNextCall = (dateString) => {
         if (!dateString) return "-";
         const date = new Date(dateString);
@@ -39,13 +48,16 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient })
                             <td className="contact-cell">
                                 <div className="avatar-mini">
                                     <img 
-                                        src={`/avatar-${client.avatarIndex}.png`} 
+                                        src={`/avatar-${client.avatarIndex || 1}.png`} 
                                         alt={client.contact} 
                                         onError={(e) => {
                                             e.target.style.display = 'none';
                                             e.target.parentElement.classList.add(`gradient-${client.avatarIndex || 1}`);
                                         }} 
                                     />
+                                    <span className="avatar-initials">
+                                        {getInitials(client.contact)}
+                                    </span>
                                 </div>
                                 <span>{client.contact || "לקוח חדש"}</span>
                             </td>
@@ -58,7 +70,14 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient })
                                             className="whatsapp-pill-btn"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                const cleanNumber = client.phone.replace(/\D/g, '').replace(/^0/, '972');
+                                                // Improved Phone Cleaning logic (Avoid double 972)
+                                                let rawNum = client.phone.replace(/\D/g, '');
+                                                if (rawNum.startsWith('0')) {
+                                                    rawNum = '972' + rawNum.substring(1);
+                                                } else if (rawNum.startsWith('5')) {
+                                                    rawNum = '972' + rawNum; // Standard IL mobile with no 0
+                                                }
+                                                const cleanNumber = rawNum;
                                                 const message = `היי ${client.contact || 'שם הלקוח'}, כאן טל מ-Tali's Events, אשמח לתת לך פרטים על יום הגיבוש שלנו!`;
                                                 const url = `https://api.whatsapp.com/send?phone=${cleanNumber}&text=${encodeURIComponent(message)}`;
                                                 window.open(url, '_blank');

@@ -41,7 +41,8 @@ export default function PublicLeadForm() {
             id: uniqueId,
             ...formData,
             phone: `'${formData.phone}`,
-            status: 'חדש' // Standard status for new leads
+            status: 'חדש', // Standard status for new leads
+            avatarIndex: Math.floor(Math.random() * 4) + 1
         };
 
         try {

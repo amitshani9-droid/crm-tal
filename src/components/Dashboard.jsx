@@ -76,37 +76,43 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
     const handleSaveClient = async (updatedClient) => {
         setIsSaving(true);
-        const existingClient = clients.find(c => String(c.id) === String(updatedClient.id));
-
-        // Format phone: ensure it starts with ' to preserve lead zero in Sheets
-        const formattedPhone = updatedClient.phone.startsWith("'") ? updatedClient.phone : `'${updatedClient.phone}`;
+        
+        // הגנה מפני קריסה: מוודא שיש מספר טלפון לפני הפעלת startsWith
+        const phone = updatedClient.phone || "";
+        const formattedPhone = phone.startsWith("'") ? phone : `'${phone}`;
         const finalClientData = { ...updatedClient, phone: formattedPhone };
 
         try {
+            const existingClient = clients.find(c => String(c.id) === String(updatedClient.id));
+            
             if (existingClient) {
-                await fetch(`${SHEETDB_URL}/id/${String(updatedClient.id)}`, {
+                // עדכון לקוח קיים
+                const response = await fetch(`${SHEETDB_URL}/id/${String(updatedClient.id)}`, {
                     method: 'PATCH',
                     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                     body: JSON.stringify({ data: { ...finalClientData } })
                 });
-                setClients(prev => prev.map(c => 
-                    String(c.id) === String(updatedClient.id) ? finalClientData : c
-                ));
+                if (!response.ok) throw new Error("Update failed");
+                
+                setClients(prev => prev.map(c => String(c.id) === String(updatedClient.id) ? finalClientData : c));
             } else {
-                const finalClient = { ...finalClientData, id: String(Date.now()) };
-                await fetch(SHEETDB_URL, {
+                // הוספת לקוח חדש
+                const response = await fetch(SHEETDB_URL, {
                     method: 'POST',
                     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ data: [finalClient] })
+                    body: JSON.stringify({ data: [finalClientData] })
                 });
-                setClients(prev => [...prev, finalClient]);
+                if (!response.ok) throw new Error("Creation failed");
+                
+                setClients(prev => [...prev, finalClientData]);
             }
+            return true; // מחזיר הצלחה
         } catch (error) {
-            console.error("Saving failed", error);
-            alert("הייתה שגיאה בשמירת הנתונים.");
+            console.error(error);
+            alert("שגיאה: השמירה בענן נכשלה. בדוק חיבור לאינטרנט.");
+            return false; // מחזיר כישלון
         } finally {
             setIsSaving(false);
-            handleCloseProfile();
         }
     };
 
@@ -144,24 +150,37 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     };
 
     const handleExportCSV = () => {
-        if (!clients || clients.length === 0) return;
-        const headers = "מזהה,שם,טלפון,אימייל,חברה,סטטוס\n";
-        const rows = clients.map(c => 
-            `"${c.id}","${c.contact || ''}","${c.phone || ''}","${c.email || ''}","${c.company || ''}","${c.status || 'חדש'}"`
-        ).join("\n");
+        if (!clients || clients.length === 0) {
+            alert("אין נתונים לייצוא.");
+            return;
+        }
+
+        const headers = "ID,סטטוס,איש קשר,טלפון,מייל,תפקיד,חברה,היסטוריית שיחות,שיחה הבאה\n";
+        const rows = clients.map(c => {
+            const history = (c.history || "").replace(/"/g, '""');
+            const contact = (c.contact || "").replace(/"/g, '""');
+            const company = (c.company || "").replace(/"/g, '""');
+            const role = (c.role || "").replace(/"/g, '""');
+            const phone = (c.phone || "").startsWith("'") ? c.phone.substring(1) : (c.phone || "");
+
+            return `"${c.id}","${c.status || 'חדש'}","${contact}","${phone}","${c.email || ''}","${role}","${company}","${history}","${c.nextCall || ''}"`;
+        }).join("\n");
+
         const csvContent = "\ufeff" + headers + rows;
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `client_report_${new Date().toISOString().split('T')[0]}.csv`;
+        link.download = `CRM_Export_${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
     };
 
     // Filter Groups
     const todayClients = clients.filter(c => c.nextCall && c.nextCall.split('T')[0] === todayStr);
-    const newClients = clients.filter(c => String(c.status) === 'חדש' || !c.status);
-    const inProgressClients = clients.filter(c => String(c.status) === 'בטיפול');
-    const closedClients = clients.filter(c => String(c.status) === 'סגור');
+    const todayIds = new Set(todayClients.map(c => String(c.id)));
+
+    const newClients = clients.filter(c => !todayIds.has(String(c.id)) && (String(c.status) === 'חדש' || !c.status));
+    const inProgressClients = clients.filter(c => !todayIds.has(String(c.id)) && String(c.status) === 'בטיפול');
+    const closedClients = clients.filter(c => !todayIds.has(String(c.id)) && String(c.status) === 'סגור');
 
     return (
         <div className="dashboard">

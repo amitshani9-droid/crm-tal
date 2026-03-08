@@ -6,6 +6,15 @@ import FileUploader from './FileUploader';
 function ClientProfile({ client, isOpen, onClose, onSave }) {
     const [formData, setFormData] = useState(null);
 
+    const getInitials = (name) => {
+        if (!name) return "?";
+        const parts = name.trim().split(" ");
+        if (parts.length > 1) {
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+        return parts[0][0].toUpperCase();
+    };
+
     useEffect(() => {
         if (client) {
             const cleanPhone = client.phone?.startsWith("'") ? client.phone.substring(1) : client.phone;
@@ -19,9 +28,9 @@ function ClientProfile({ client, isOpen, onClose, onSave }) {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleSave = () => {
-        onSave(formData);
-        onClose();
+    const handleSave = async () => {
+        const success = await onSave(formData);
+        if (success) onClose();
     };
 
     const handleExportPDF = () => {
@@ -89,6 +98,9 @@ function ClientProfile({ client, isOpen, onClose, onSave }) {
                                 alt="Avatar"
                                 onError={(e) => { e.target.style.display = 'none'; }}
                             />
+                            <span className="avatar-initials">
+                                {getInitials(formData.contact)}
+                            </span>
                         </div>
                         <div className="profile-titles">
                             <input

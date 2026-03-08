@@ -37,11 +37,28 @@ function App() {
       const res = await fetch(SHEETDB_URL);
       const data = await res.json();
       
-      // Critical Fix: Ensure every row has a unique ID
-      const sanitizedData = data.map((item, index) => ({
-        ...item,
-        id: item.id || `row-${index}` // Use existing ID or fallback to index
-      }));
+      const now = Date.now();
+      // Use for...of to allow async/await inside the loop for sequential patching if needed
+      const sanitizedData = [];
+      
+      for (let i = 0; i < data.length; i++) {
+        let item = data[i];
+        // If ID is missing or is an old placeholder, fix it permanently
+        if (!item.id || String(item.id).startsWith('row-')) {
+          const newId = String(now + i);
+          
+          // Sync back to SheetDB using contact as identifier (if available)
+          if (item.contact) {
+            fetch(`${SHEETDB_URL}/contact/${encodeURIComponent(item.contact)}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ data: { id: newId } })
+            }).catch(err => console.error("ID sync failed", err));
+          }
+          item = { ...item, id: newId };
+        }
+        sanitizedData.push(item);
+      }
       
       setClients(sanitizedData);
     } catch (err) {

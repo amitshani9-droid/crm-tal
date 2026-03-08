@@ -37,16 +37,19 @@ function Settings({ clients }) {
             return;
         }
 
-        const headers = ["ID,סטטוס,איש קשר,טלפון,מייל,תפקיד,חברה,היסטוריה,שיחה הבאה\n"];
+        const headers = "ID,סטטוס,איש קשר,טלפון,מייל,תפקיד,חברה,היסטוריית שיחות,שיחה הבאה\n";
         const rows = clients.map(c => {
-            const historySafe = c.history ? c.history.replace(/"/g, '""') : "";
-            const contactSafe = c.contact ? c.contact.replace(/"/g, '""') : "";
-            const companySafe = c.company ? c.company.replace(/"/g, '""') : "";
-            
-            return `"${c.id}","${c.status || 'חדש'}","${contactSafe}","${c.phone || ''}","${c.email || ''}","${c.role || ''}","${companySafe}","${historySafe}","${c.nextCall || ''}"`;
+            const history = (c.history || "").replace(/"/g, '""');
+            const contact = (c.contact || "").replace(/"/g, '""');
+            const company = (c.company || "").replace(/"/g, '""');
+            const role = (c.role || "").replace(/"/g, '""');
+            const phone = (c.phone || "").startsWith("'") ? c.phone.substring(1) : (c.phone || "");
+
+            return `"${c.id}","${c.status || 'חדש'}","${contact}","${phone}","${c.email || ''}","${role}","${company}","${history}","${c.nextCall || ''}"`;
         }).join("\n");
 
-        const blob = new Blob(["\ufeff" + headers + rows], { type: 'text/csv;charset=utf-8;' });
+        const csvContent = "\ufeff" + headers + rows;
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = `CRM_Backup_${new Date().toISOString().split('T')[0]}.csv`;
