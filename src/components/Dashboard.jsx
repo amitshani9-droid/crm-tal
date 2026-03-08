@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ClientProfile from './ClientProfile';
 import MondayTable from './MondayTable';
 import StatisticsBento from './StatisticsBento';
+import AnalyticsSection from './AnalyticsSection';
 
 function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     const [selectedClient, setSelectedClient] = useState(null);
@@ -125,10 +126,15 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     };
 
     const handleDeleteClient = async (clientId) => {
-        if (!window.confirm("האם אתה בטוח שברצונך למחוק את הלקוח? פעולה זו אינה ניתנת לביטול.")) return;
+        const clientToDelete = clients.find(c => c.id === clientId);
+        if (!clientToDelete) return;
+
+        if (!window.confirm(`האם אתה בטוח שברצונך למחוק את הלקוח "${clientToDelete.contact || 'ללא שם'}"?`)) return;
 
         try {
-            const response = await fetch(`${SHEETDB_URL}/id/${clientId}`, {
+            // 1. Primary Attempt: Delete by ID
+            // Using /id/${clientId} target the literal 'id' column in SheetDB
+            let response = await fetch(`${SHEETDB_URL}/id/${String(clientId)}`, {
                 method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
@@ -136,13 +142,27 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                 }
             });
 
+            const result = await response.json();
+
+            // 2. Fallback Attempt: If ID wasn't found (result.deleted === 0), try by contact name
+            if (result.deleted === 0 && clientToDelete.contact) {
+                console.log("ID not found in SheetDB, trying fallback deletion by contact name...");
+                response = await fetch(`${SHEETDB_URL}/contact/${encodeURIComponent(clientToDelete.contact)}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+            }
+
             if (!response.ok) throw new Error("Delete failed");
 
             // Update local state
             setClients(prev => prev.filter(client => client.id !== clientId));
         } catch (error) {
             console.error("Error deleting client from SheetDB", error);
-            alert("הייתה שגיאה במחיקת הלקוח. אנא נסה שוב.");
+            alert("הייתה שגיאה במחיקת הלקוח. אנא ודא שהנתונים מסונכרנים ונסה שוב.");
         }
     };
 
@@ -164,16 +184,23 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     };
 
     const exportToSheets = (clientsToExport) => {
-        const headers = ["סטטוס,איש קשר,טלפון,מייל,תפקיד,חברה,שיחה אחרונה\n"];
+        // Analytics for export
+        const total = clientsToExport.length;
+        const closed = clientsToExport.filter(c => c.status === 'סגור').length;
+        const conversionRate = total > 0 ? ((closed / total) * 100).toFixed(1) : 0;
+
+        const summaryLine = `דוח סיכום CRM - סך הכל לקוחות: ${total} | אחוז סגירה: ${conversionRate}%\n\n`;
+        const headers = "ID,סטטוס,איש קשר,טלפון,מייל,תפקיד,חברה,שיחה אחרונה\n";
+        
         const rows = clientsToExport.map(c => {
             const historySafe = c.history ? c.history.replace(/"/g, '""') : "";
-            return `"${c.status || 'חדש'}","${c.contact || ''}","${c.phone || ''}","${c.email || ''}","${c.role || ''}","${c.company || ''}","${historySafe}"`;
+            return `"${c.id}","${c.status || 'חדש'}","${c.contact || ''}","${c.phone || ''}","${c.email || ''}","${c.role || ''}","${c.company || ''}","${historySafe}"`;
         }).join("\n");
 
-        const blob = new Blob(["\ufeff" + headers + rows], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob(["\ufeff" + summaryLine + headers + rows], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `CRM_Tal_Shani_${new Date().toLocaleDateString('he-IL')}.csv`;
+        link.download = `CRM_Summary_Report_${new Date().toLocaleDateString('he-IL')}.csv`;
         link.click();
     };
 
@@ -192,6 +219,8 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                 closedDeals={closedDeals}
                 todoToday={todoToday}
             />
+
+            <AnalyticsSection clients={clients} />
 
             <div className="dashboard-actions-row">
                 <div className="dashboard-actions">

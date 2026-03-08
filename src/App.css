@@ -1181,6 +1181,124 @@
 }
 
 /* ----------------------------------
+   Analytics Section Styling
+----------------------------------- */
+.analytics-container {
+  margin-bottom: var(--space-xl);
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.analytics-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.analytics-chart-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot.purple { background: #a78bfa; }
+.dot.orange { background: #fb923c; }
+.dot.green { background: #4ade80; }
+
+.analytics-stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 300px;
+  flex: 1;
+}
+
+.mini-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 15px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.mini-stat-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateX(-5px);
+}
+
+.mini-stat-card.highlight {
+  border-color: rgba(74, 222, 128, 0.2);
+  background: rgba(74, 222, 128, 0.03);
+}
+
+.mini-label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.mini-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+}
+
+.mini-value.success {
+    color: #4ade80;
+}
+
+.stat-progress {
+  height: 6px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease-out;
+}
+
+.progress-bar.purple { background: linear-gradient(90deg, #a78bfa, #8b5cf6); }
+.progress-bar.orange { background: linear-gradient(90deg, #fb923c, #f97316); }
+.progress-bar.green { background: linear-gradient(90deg, #4ade80, #22c55e); }
+
+@media (max-width: 900px) {
+    .analytics-content {
+        justify-content: center;
+    }
+}
+
+
+/* ----------------------------------
    Settings Page Styling
 ----------------------------------- */
 .settings-view {
