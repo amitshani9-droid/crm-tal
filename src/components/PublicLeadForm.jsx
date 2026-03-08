@@ -34,25 +34,26 @@ export default function PublicLeadForm() {
         e.preventDefault();
         setIsLoading(true);
 
-        // Generate unique ID
-        const uniqueId = String(Date.now());
-
-        const payload = {
-            id: uniqueId,
-            ...formData,
-            phone: `'${formData.phone}`,
-            status: 'חדש', // Standard status for new leads
+        const leadData = {
+            id: Date.now().toString(),
+            contact: formData.contact,          // Matching column B (contact)
+            phone: `'${formData.phone}`,       // Preserve leading zero
+            email: formData.email,             // Column D
+            company: formData.company || "",   // Column E
+            status: "חדש",                     // Column H (Essential for pipeline)
+            history: "ליד חדש מהאתר",           // Column F
+            nextCall: "",                      // Column G
             avatarIndex: Math.floor(Math.random() * 4) + 1
         };
 
         try {
             const response = await fetch(SHEETDB_URL, {
                 method: 'POST',
-                headers: {
+                headers: { 
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json' 
                 },
-                body: JSON.stringify({ data: [payload] })
+                body: JSON.stringify({ data: [leadData] })
             });
 
             if (response.ok || response.status === 201) {
