@@ -950,6 +950,43 @@
   color: var(--status-closed);
 }
 
+.status-select-mini {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  appearance: none;
+  text-align: center;
+  font-family: inherit;
+}
+
+.status-select-mini.new {
+  background-color: var(--status-new-bg);
+  color: var(--status-new);
+}
+
+.status-select-mini.in-progress {
+  background-color: var(--status-progress-bg);
+  color: var(--status-progress);
+}
+
+.status-select-mini.closed {
+  background-color: var(--status-closed-bg);
+  color: var(--status-closed);
+}
+
+.status-select-mini:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-color: rgba(0,0,0,0.1);
+}
+
+
 /* Lead Form Styling */
 .lead-form-wrapper {
   display: flex;

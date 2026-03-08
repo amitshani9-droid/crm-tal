@@ -1,22 +1,9 @@
 import React from 'react';
 
-function MondayTable({ clients, onClientClick }) {
+function MondayTable({ clients, onClientClick, onStatusChange }) {
     if (!clients || clients.length === 0) {
         return <div className="placeholder-view">אין לקוחות להצגה בתצוגה זו.</div>;
     }
-
-    const getStatusBadge = (status) => {
-        switch (status) {
-            case 'חדש':
-                return <span className="status-badge new">חדש</span>;
-            case 'בטיפול':
-                return <span className="status-badge in-progress">בטיפול</span>;
-            case 'סגור':
-                return <span className="status-badge closed">סגור</span>;
-            default:
-                return <span className="status-badge new">חדש</span>;
-        }
-    };
 
     const formatNextCall = (dateString) => {
         if (!dateString) return "-";
@@ -53,7 +40,17 @@ function MondayTable({ clients, onClientClick }) {
                             <td>{client.phone || "-"}</td>
                             <td>{client.role || "-"}</td>
                             <td>{formatNextCall(client.nextCall)}</td>
-                            <td className="status-cell">{getStatusBadge(client.status)}</td>
+                            <td className="status-cell" onClick={(e) => e.stopPropagation()}>
+                                <select 
+                                    className={`status-select-mini ${client.status === 'חדש' ? 'new' : client.status === 'בטיפול' ? 'in-progress' : 'closed'}`}
+                                    value={client.status || 'חדש'}
+                                    onChange={(e) => onStatusChange(client.id, e.target.value)}
+                                >
+                                    <option value="חדש">🔵 חדש</option>
+                                    <option value="בטיפול">🟠 בטיפול</option>
+                                    <option value="סגור">🟢 סגור</option>
+                                </select>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

@@ -31,6 +31,35 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
         setTimeout(() => setRefreshSuccess(false), 3000);
     };
 
+    const handleStatusChange = async (clientId, newStatus) => {
+        // 1. Snapshot previous state for rollback
+        const previousClients = [...clients];
+
+        // 2. Optimistic Update (Immediate UI response)
+        setClients(prev => prev.map(client =>
+            client.id === clientId ? { ...client, status: newStatus } : client
+        ));
+
+        try {
+            // 3. Sync with SheetDB using the unique ID
+            const response = await fetch(`${SHEETDB_URL}/id/${clientId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ data: { status: newStatus } })
+            });
+
+            if (!response.ok) throw new Error("Server error");
+        } catch (error) {
+            console.error("Error updating status in SheetDB", error);
+            // 4. Rollback UI on failure
+            setClients(previousClients);
+            alert("העדכון נכשל בענן. הנתונים שוחזרו.");
+        }
+    };
+
     const handleSaveClient = async (updatedClient) => {
         setIsSaving(true);
         const existingClient = clients.find(c => c.id === updatedClient.id);
@@ -47,8 +76,8 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                     body: JSON.stringify({ data: { ...updatedClient } })
                 });
 
-                // Update UI state immediately after successful fetch
-                setClients(clients.map(c => c.id === updatedClient.id ? updatedClient : c));
+                // Update UI state specifically for this client using ID check
+                setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
             } else {
                 // Add new record: POST request
                 await fetch(SHEETDB_URL, {
@@ -61,7 +90,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                 });
 
                 // Update UI state immediately
-                setClients([...clients, updatedClient]);
+                setClients(prev => [...prev, updatedClient]);
             }
         } catch (error) {
             console.error("Error saving data to SheetDB", error);
@@ -136,23 +165,23 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
             {todayClients.length > 0 && (
                 <div className="pipeline-section focus-section glass-card">
                     <h2 className="pipeline-title"><span className="icon pulse-icon">🚨</span> לטיפול היום!</h2>
-                    <MondayTable clients={todayClients} onClientClick={handleOpenProfile} />
+                    <MondayTable clients={todayClients} onClientClick={handleOpenProfile} onStatusChange={handleStatusChange} />
                 </div>
             )}
 
             <div className="pipeline-section">
                 <h2 className="pipeline-title"><span className="status-dot new"></span> לידים חדשים ({newClients.length})</h2>
-                <MondayTable clients={newClients} onClientClick={handleOpenProfile} />
+                <MondayTable clients={newClients} onClientClick={handleOpenProfile} onStatusChange={handleStatusChange} />
             </div>
 
             <div className="pipeline-section">
                 <h2 className="pipeline-title"><span className="status-dot in-progress"></span> בטיפול אקטיבי ({inProgressClients.length})</h2>
-                <MondayTable clients={inProgressClients} onClientClick={handleOpenProfile} />
+                <MondayTable clients={inProgressClients} onClientClick={handleOpenProfile} onStatusChange={handleStatusChange} />
             </div>
 
             <div className="pipeline-section">
                 <h2 className="pipeline-title"><span className="status-dot closed"></span> לקוחות שנסגרו ({closedClients.length})</h2>
-                <MondayTable clients={closedClients} onClientClick={handleOpenProfile} />
+                <MondayTable clients={closedClients} onClientClick={handleOpenProfile} onStatusChange={handleStatusChange} />
             </div>
 
             <ClientProfile
@@ -164,6 +193,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
             />
         </div>
     );
+
 }
 
 export default Dashboard;
