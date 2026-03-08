@@ -34,36 +34,37 @@ export default function PublicLeadForm() {
         e.preventDefault();
         setIsLoading(true);
 
-        const leadData = {
-            id: Date.now().toString(),
-            contact: formData.contact,          // Matching column B (contact)
-            phone: `'${formData.phone}`,       // Preserve leading zero
-            email: formData.email,             // Column D
-            company: formData.company || "",   // Column E
-            status: "חדש",                     // Column H (Essential for pipeline)
-            history: "ליד חדש מהאתר",           // Column F
-            nextCall: "",                      // Column G
+        // יצירת אובייקט הליד עם שמות השדות המדויקים מהגליון (Column Headers)
+        const newLead = {
+            contact: formData.contact,         // עמודה B (contact)
+            phone: `'${formData.phone}`,      // עמודה C (phone) - גרש לשמירה על ה-0
+            email: formData.email || "",      // עמודה D (email)
+            company: formData.company || "",  // עמודה E (company)
+            history: "ליד חדש מהאתר",          // עמודה F (history)
+            nextCall: "",                     // עמודה G (nextCall)
+            status: "חדש",                    // עמודה H (status) - קריטי ל-Pipeline
+            id: Date.now().toString(),        // עמודה I (id) - מזהה ייחודי
             avatarIndex: Math.floor(Math.random() * 4) + 1
         };
 
         try {
             const response = await fetch(SHEETDB_URL, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json' 
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ data: [leadData] })
+                body: JSON.stringify({ data: [newLead] })
             });
 
-            if (response.ok || response.status === 201) {
+            if (response.ok) {
                 setIsSubmitted(true);
             } else {
-                alert('אירעה שגיאה בשליחת הטופס. אנא נסה שנית.');
+                throw new Error("Failed to send lead");
             }
-        } catch (err) {
-            console.error("Submission Error", err);
-            alert('אירעה שגיאה בשליחת הטופס. אנא נסה שנית.');
+        } catch (error) {
+            console.error("Error submitting lead:", error);
+            alert("חלה שגיאה בשליחת הפרטים. כדאי לנסות שוב.");
         } finally {
             setIsLoading(false);
         }
