@@ -1181,120 +1181,164 @@
 }
 
 /* ----------------------------------
+   Core Glassmorphism Overhaul
+----------------------------------- */
+.glass-card, .glass-bento-card {
+  background: rgba(255, 255, 255, 0.88) !important; /* Increased opacity for pop */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 4px 6px rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-lg);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover, .glass-bento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* ----------------------------------
+   Analytics & Dashboard Typography
+----------------------------------- */
+.high-contrast {
+    color: #2c3e50 !important; /* Deep authoritative grey */
+}
+
+.bento-value, .bento-value-large, .mini-value-large {
+    font-weight: 800 !important;
+    color: #2c3e50;
+    letter-spacing: -1px;
+}
+
+.pulse-red-text {
+    color: #b71c1c !important; /* Strong red alert */
+    font-weight: 800;
+    animation: softPulse 2s infinite;
+}
+
+@keyframes softPulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.9; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* ----------------------------------
    Analytics Section Styling
 ----------------------------------- */
-.analytics-container {
+.analytics-container.high-contrast {
   margin-bottom: var(--space-xl);
-  padding: 30px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #ffffff;
 }
 
-.analytics-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 40px;
-  flex-wrap: wrap;
+.mini-stat-card.high-contrast {
+    background: rgba(44, 62, 80, 0.03);
+    border: 1px solid rgba(44, 62, 80, 0.08);
+    border-radius: 20px;
+    padding: 24px;
 }
 
-.analytics-chart-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+.mini-label.contrast {
+    color: #636e72;
+    font-weight: 700;
+    font-size: 0.95rem;
 }
 
-.chart-legend {
-  display: flex;
-  gap: 15px;
-  font-size: 0.9rem;
-  color: #cbd5e1;
+/* Solid Visual Tokens */
+.dot.purple-solid { background: #6c5ce7; box-shadow: 0 0 10px rgba(108, 92, 231, 0.3); }
+.dot.orange-solid { background: #fdcb6e; box-shadow: 0 0 10px rgba(253, 203, 110, 0.3); }
+.dot.green-solid { background: #00b894; box-shadow: 0 0 10px rgba(0, 184, 148, 0.3); }
+
+.progress-bar.purple-solid { background: #6c5ce7; }
+.progress-bar.orange-solid { background: #fdcb6e; }
+.progress-bar.emerald-solid { background: #00b894; }
+
+/* ----------------------------------
+   Action Buttons
+----------------------------------- */
+.dashboard-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
 }
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.btn-secondary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    border-radius: 12px;
+    font-weight: 700;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
 }
 
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+.btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
 }
 
-.dot.purple { background: #a78bfa; }
-.dot.orange { background: #fb923c; }
-.dot.green { background: #4ade80; }
-
-.analytics-stats-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  min-width: 300px;
-  flex: 1;
+/* ----------------------------------
+   Quick Action Buttons (Table)
+----------------------------------- */
+.phone-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
 }
 
-.mini-stat-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 15px 20px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
+.whatsapp-quick-btn {
+    background: #22c55e;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(34, 197, 94, 0.2);
+    opacity: 0.8;
 }
 
-.mini-stat-card:hover {
-  background: rgba(255, 255, 255, 0.07);
-  transform: translateX(-5px);
+.whatsapp-quick-btn:hover {
+    transform: scale(1.15);
+    opacity: 1;
+    background: #16a34a;
+    box-shadow: 0 4px 8px rgba(34, 197, 94, 0.4);
 }
 
-.mini-stat-card.highlight {
-  border-color: rgba(74, 222, 128, 0.2);
-  background: rgba(74, 222, 128, 0.03);
+.btn-icon-excel {
+    color: #166534; /* Excel Green */
 }
 
-.mini-label {
-  font-size: 0.85rem;
-  color: #94a3b8;
-  font-weight: 500;
+/* ----------------------------------
+   Spacing Improvements
+----------------------------------- */
+.pipeline-section {
+    margin-top: 50px;
 }
 
-.mini-value {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: white;
-}
-
-.mini-value.success {
-    color: #4ade80;
-}
-
-.stat-progress {
-  height: 6px;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 1s ease-out;
-}
-
-.progress-bar.purple { background: linear-gradient(90deg, #a78bfa, #8b5cf6); }
-.progress-bar.orange { background: linear-gradient(90deg, #fb923c, #f97316); }
-.progress-bar.green { background: linear-gradient(90deg, #4ade80, #22c55e); }
-
-@media (max-width: 900px) {
-    .analytics-content {
-        justify-content: center;
-    }
+.pipeline-title {
+    margin-bottom: 25px;
+    font-size: 1.6rem;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 

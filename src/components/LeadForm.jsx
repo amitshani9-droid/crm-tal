@@ -21,7 +21,7 @@ function LeadForm({ SHEETDB_URL, onBack }) {
             id: String(Date.now()),
             status: "חדש",
             contact: formData.contact,
-            phone: formData.phone,
+            phone: `'${formData.phone}`,
             company: formData.company,
             email: "",
             role: "",

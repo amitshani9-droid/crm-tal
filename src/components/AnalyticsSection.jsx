@@ -2,105 +2,104 @@ import React from 'react';
 
 /**
  * AnalyticsSection Component
- * Visualizes CRM data using a custom SVG Pie Chart and summary cards.
+ * Visualizes CRM data using a high-contrast custom Pie Chart and summary tiles.
  */
 function AnalyticsSection({ clients }) {
     if (!clients || clients.length === 0) return null;
 
-    // 1. Analytics Logic: Calculate distribution
     const total = clients.length;
     const stats = {
-        new: clients.filter(c => c.status === 'חדש' || !c.status).length,
-        active: clients.filter(c => c.status === 'בטיפול').length,
-        closed: clients.filter(c => c.status === 'סגור').length
+        new: clients.filter(c => String(c.status) === 'חדש' || !c.status).length,
+        active: clients.filter(c => String(c.status) === 'בטיפול').length,
+        closed: clients.filter(c => String(c.status) === 'סגור').length
     };
 
-    // Calculate Percentages
     const newPerc = ((stats.new / total) * 100).toFixed(0);
     const activePerc = ((stats.active / total) * 100).toFixed(0);
     const successRate = ((stats.closed / total) * 100).toFixed(0);
 
-    // SVG Pie Chart Calculation (Simple approximation for 3 segments)
-    // We'll use stroke-dasharray on a circle for a "Donut" style chart.
     const radius = 70;
     const circumference = 2 * Math.PI * radius;
     
-    const newOffset = circumference;
-    const activeOffset = circumference - (circumference * (stats.new / total));
-    const closedOffset = circumference - (circumference * ((stats.new + stats.active) / total));
+    // Vibrant solid colors for maximum impact
+    const colors = {
+        purple: '#6c5ce7', // Deep Purple
+        orange: '#fdcb6e', // Vibrant Orange
+        emerald: '#00b894' // Emerald Green
+    };
 
     return (
-        <div className="analytics-container glass-card">
+        <div className="analytics-container glass-card high-contrast">
             <div className="analytics-content">
-                {/* Visual Chart Section */}
+                {/* Enhanced Pie Chart */}
                 <div className="analytics-chart-box">
-                    <div className="pie-chart-wrapper">
-                        <svg width="200" height="200" viewBox="0 0 200 200">
-                            {/* Background Circle */}
-                            <circle cx="100" cy="100" r={radius} fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="20" />
+                    <div className="pie-chart-wrapper" style={{ position: 'relative' }}>
+                        <svg width="220" height="220" viewBox="0 0 200 200">
+                            {/* Visual background track */}
+                            <circle cx="100" cy="100" r={radius} fill="transparent" stroke="rgba(0,0,0,0.03)" strokeWidth="24" />
                             
-                            {/* New leads segment (Purple) */}
+                            {/* New leads segment */}
                             <circle 
                                 cx="100" cy="100" r={radius} 
                                 fill="transparent" 
-                                stroke="#a78bfa" 
-                                strokeWidth="22" 
+                                stroke={colors.purple} 
+                                strokeWidth="24" 
                                 strokeDasharray={`${(stats.new / total) * circumference} ${circumference}`}
                                 transform="rotate(-90 100 100)"
                                 strokeLinecap="round"
                             />
                             
-                            {/* In Progress segment (Orange) */}
+                            {/* In Progress segment */}
                             <circle 
                                 cx="100" cy="100" r={radius} 
                                 fill="transparent" 
-                                stroke="#fb923c" 
-                                strokeWidth="22" 
+                                stroke={colors.orange} 
+                                strokeWidth="24" 
                                 strokeDasharray={`${(stats.active / total) * circumference} ${circumference}`}
                                 transform={`rotate(${-90 + (stats.new / total) * 360} 100 100)`}
                                 strokeLinecap="round"
                             />
 
-                            {/* Closed segment (Green) */}
+                            {/* Closed segment */}
                             <circle 
                                 cx="100" cy="100" r={radius} 
                                 fill="transparent" 
-                                stroke="#4ade80" 
-                                strokeWidth="22" 
+                                stroke={colors.emerald} 
+                                strokeWidth="24" 
                                 strokeDasharray={`${(stats.closed / total) * circumference} ${circumference}`}
                                 transform={`rotate(${-90 + ((stats.new + stats.active) / total) * 360} 100 100)`}
                                 strokeLinecap="round"
                             />
                             
-                            {/* Center Text */}
-                            <text x="100" y="95" textAnchor="middle" fill="white" fontSize="24" fontWeight="bold">{total}</text>
-                            <text x="100" y="120" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="12">סה"כ לקוחות</text>
+                            {/* High-Contrast Center Stats */}
+                            <text x="100" y="98" textAnchor="middle" fill="#2c3e50" fontSize="28" fontWeight="800">{total}</text>
+                            <text x="100" y="122" textAnchor="middle" fill="#546e7a" fontSize="13" fontWeight="700">לקוחות</text>
                         </svg>
                     </div>
                     
-                    <div className="chart-legend">
-                        <div className="legend-item"><span className="dot purple"></span> חדשים ({stats.new})</div>
-                        <div className="legend-item"><span className="dot orange"></span> בטיפול ({stats.active})</div>
-                        <div className="legend-item"><span className="dot green"></span> סגורים ({stats.closed})</div>
+                    <div className="chart-legend high-contrast">
+                        <div className="legend-item"><span className="dot purple-solid"></span> כניסת לידים ({stats.new})</div>
+                        <div className="legend-item"><span className="dot orange-solid"></span> תהליכי עבודה ({stats.active})</div>
+                        <div className="legend-item"><span className="dot green-solid"></span> הצלחות ({stats.closed})</div>
                     </div>
                 </div>
 
-                {/* Summary Cards Section */}
+                {/* Summarized Performance Tiles */}
                 <div className="analytics-stats-grid">
-                    <div className="mini-stat-card">
-                        <span className="mini-label">לידים חדשים</span>
-                        <span className="mini-value">{newPerc}%</span>
-                        <div className="stat-progress"><div className="progress-bar purple" style={{ width: `${newPerc}%` }}></div></div>
+                    <div className="mini-stat-card high-contrast">
+                        <span className="mini-label contrast">שיעור לידים חדשים</span>
+                        <span className="mini-value-large">{newPerc}%</span>
+                        <div className="stat-progress dark-bg"><div className="progress-bar purple-solid" style={{ width: `${newPerc}%` }}></div></div>
                     </div>
-                    <div className="mini-stat-card">
-                        <span className="mini-label">בטיפול אקטיבי</span>
-                        <span className="mini-value">{activePerc}%</span>
-                        <div className="stat-progress"><div className="progress-bar orange" style={{ width: `${activePerc}%` }}></div></div>
+                    <div className="mini-stat-card high-contrast">
+                        <span className="mini-label contrast">אפיק מכירות פעיל</span>
+                        <span className="mini-value-large" style={{ color: '#f39c12' }}>{activePerc}%</span>
+                        <div className="stat-progress dark-bg"><div className="progress-bar orange-solid" style={{ width: `${activePerc}%` }}></div></div>
                     </div>
-                    <div className="mini-stat-card highlight">
-                        <span className="mini-label">אחוז סגירה (Success)</span>
-                        <span className="mini-value success">{successRate}%</span>
-                        <div className="stat-progress"><div className="progress-bar green" style={{ width: `${successRate}%` }}></div></div>
+                    <div className="mini-stat-card highlight high-contrast">
+                        <span className="mini-label contrast" style={{ color: '#27ae60' }}>שיעור הצלחה (Success Rate)</span>
+                        <span className="mini-value-large emerald">{successRate}%</span>
+                        <div className="stat-progress dark-bg"><div className="progress-bar emerald-solid" style={{ width: `${successRate}%` }}></div></div>
                     </div>
                 </div>
             </div>

@@ -40,6 +40,7 @@ export default function PublicLeadForm() {
         const payload = {
             id: uniqueId,
             ...formData,
+            phone: `'${formData.phone}`,
             status: 'חדש' // Standard status for new leads
         };
 

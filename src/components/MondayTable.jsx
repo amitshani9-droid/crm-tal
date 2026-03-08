@@ -50,7 +50,26 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient })
                                 <span>{client.contact || "לקוח חדש"}</span>
                             </td>
                             <td>{client.company || "-"}</td>
-                            <td>{client.phone || "-"}</td>
+                            <td className="phone-cell">
+                                <div className="phone-display">
+                                    <span>{client.phone?.startsWith("'") ? client.phone.substring(1) : (client.phone || "-")}</span>
+                                    {client.phone && (
+                                        <button 
+                                            className="whatsapp-quick-btn"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                const cleanPhone = client.phone.replace(/'/g, '').replace(/\D/g, '');
+                                                const finalPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.substring(1) : cleanPhone;
+                                                const message = `היי ${client.contact || 'שם הלקוח'}, כאן טל מ-Tali's Events, אשמח לתת לך פרטים על יום הגיבוש שלנו!`;
+                                                window.open(`https://wa.me/${finalPhone}?text=${encodeURIComponent(message)}`, '_blank');
+                                            }}
+                                            title="שלח הודעת וואטסאפ מהירה"
+                                        >
+                                            🟢
+                                        </button>
+                                    )}
+                                </div>
+                            </td>
                             <td>{client.role || "-"}</td>
                             <td>{formatNextCall(client.nextCall)}</td>
                             <td className="status-cell" onClick={(e) => e.stopPropagation()}>

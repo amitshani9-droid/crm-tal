@@ -8,7 +8,8 @@ function ClientProfile({ client, isOpen, onClose, onSave }) {
 
     useEffect(() => {
         if (client) {
-            setFormData({ ...client });
+            const cleanPhone = client.phone?.startsWith("'") ? client.phone.substring(1) : client.phone;
+            setFormData({ ...client, phone: cleanPhone });
         }
     }, [client]);
 
