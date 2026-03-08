@@ -57,15 +57,15 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
         const previousSnapshot = [...clients];
 
         // 1. ISOLATED OPTIMISTIC UPDATE:
-        // Match ONLY the specific client's id. Fallback IDs from App.jsx make this reliable.
+        // Use String conversion to ensure unique identification regardless of format
         setClients(prev => prev.map(c => 
-            c.id === clientId ? { ...c, status: newStatus } : c
+            String(c.id) === String(clientId) ? { ...c, status: newStatus } : c
         ));
 
         try {
             // 2. BACKEND SYNC (Targeted PATCH)
             // sheetDB endpoint format: /api/v1/{API_KEY}/id/{ID_VALUE}
-            const response = await fetch(`${SHEETDB_URL}/id/${clientId}`, {
+            const response = await fetch(`${SHEETDB_URL}/id/${String(clientId)}`, {
                 method: 'PATCH',
                 headers: {
                     'Accept': 'application/json',
@@ -86,12 +86,13 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
     const handleSaveClient = async (updatedClient) => {
         setIsSaving(true);
-        const existingClient = clients.find(c => c.id === updatedClient.id);
+        // String conversion ensure accurate detection
+        const existingClient = clients.find(c => String(c.id) === String(updatedClient.id));
 
         try {
             if (existingClient) {
                 // Update existing record: PATCH request
-                await fetch(`${SHEETDB_URL}/id/${updatedClient.id}`, {
+                await fetch(`${SHEETDB_URL}/id/${String(updatedClient.id)}`, {
                     method: 'PATCH',
                     headers: {
                         'Accept': 'application/json',
@@ -100,9 +101,15 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                     body: JSON.stringify({ data: { ...updatedClient } })
                 });
 
-                // Update UI state specifically for this client using ID check
-                setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
+                // Update UI state with String safety
+                setClients(prev => prev.map(c => 
+                    String(c.id) === String(updatedClient.id) ? updatedClient : c
+                ));
             } else {
+                // Formatting for new IDs
+                const newId = String(Date.now());
+                const finalClient = { ...updatedClient, id: newId };
+
                 // Add new record: POST request
                 await fetch(SHEETDB_URL, {
                     method: 'POST',
@@ -110,11 +117,11 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ data: [updatedClient] })
+                    body: JSON.stringify({ data: [finalClient] })
                 });
 
                 // Update UI state immediately
-                setClients(prev => [...prev, updatedClient]);
+                setClients(prev => [...prev, finalClient]);
             }
         } catch (error) {
             console.error("Error saving data to SheetDB", error);
@@ -126,14 +133,15 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     };
 
     const handleDeleteClient = async (clientId) => {
-        const clientToDelete = clients.find(c => c.id === clientId);
+        const clientToDelete = clients.find(c => String(c.id) === String(clientId));
         if (!clientToDelete) return;
 
         if (!window.confirm(`האם אתה בטוח שברצונך למחוק את הלקוח "${clientToDelete.contact || 'ללא שם'}"?`)) return;
 
+        console.log("Deleting ID:", clientId);
+
         try {
-            // 1. Primary Attempt: Delete by ID
-            // Using /id/${clientId} target the literal 'id' column in SheetDB
+            // Primary Attempt: Delete by ID column with String safety
             let response = await fetch(`${SHEETDB_URL}/id/${String(clientId)}`, {
                 method: 'DELETE',
                 headers: {
@@ -144,9 +152,8 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
             const result = await response.json();
 
-            // 2. Fallback Attempt: If ID wasn't found (result.deleted === 0), try by contact name
+            // Fallback for older leads (deleted === 0 means not found by ID column)
             if (result.deleted === 0 && clientToDelete.contact) {
-                console.log("ID not found in SheetDB, trying fallback deletion by contact name...");
                 response = await fetch(`${SHEETDB_URL}/contact/${encodeURIComponent(clientToDelete.contact)}`, {
                     method: 'DELETE',
                     headers: {
@@ -158,8 +165,8 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
             if (!response.ok) throw new Error("Delete failed");
 
-            // Update local state
-            setClients(prev => prev.filter(client => client.id !== clientId));
+            // Update local state with total consistency
+            setClients(prev => prev.filter(client => String(client.id) !== String(clientId)));
         } catch (error) {
             console.error("Error deleting client from SheetDB", error);
             alert("הייתה שגיאה במחיקת הלקוח. אנא ודא שהנתונים מסונכרנים ונסה שוב.");
@@ -168,7 +175,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
     const handleAddClient = () => {
         const newClient = {
-            id: Date.now().toString(),
+            id: String(Date.now()),
             status: "חדש",
             contact: "",
             phone: "",

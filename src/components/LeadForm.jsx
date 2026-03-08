@@ -18,7 +18,7 @@ function LeadForm({ SHEETDB_URL, onBack }) {
         setIsSubmitting(true);
 
         const newLead = {
-            id: Date.now().toString(),
+            id: String(Date.now()),
             status: "חדש",
             contact: formData.contact,
             phone: formData.phone,

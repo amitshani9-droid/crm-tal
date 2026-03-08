@@ -11,7 +11,7 @@ export default function PublicLeadForm() {
     
     // Core Branding (Fixed per request)
     const brandingTitle = "טל שני | חוויות שמחברות אנשים";
-    const mainHeadline = "ימי גיבוש ואירועי חברה בהתאמה אישית";
+    const mainHeadline = "ימי גיבוש של כיף וערך חברתי";
     const description = "סטייל, תוכן וערך חברתי שנשאר הרבה אחרי שהאירוע נגמר. אני יוצרת חוויות לארגונים שמחפשים יותר מעוד אירוע – ימים שמחברים בין אנשים, צוותים ותחושת משמעות.";
     const buttonText = "בואו נחבר את האנשים שלכם";
 
@@ -35,7 +35,7 @@ export default function PublicLeadForm() {
         setIsLoading(true);
 
         // Generate unique ID
-        const uniqueId = Date.now().toString();
+        const uniqueId = String(Date.now());
 
         const payload = {
             id: uniqueId,
