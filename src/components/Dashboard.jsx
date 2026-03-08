@@ -188,6 +188,10 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                         <span className="btn-icon-excel">📥</span> ייצוא נתונים לאקסל
                     </button>
 
+                    <button className="btn-secondary" onClick={() => window.open('/join', '_blank')}>
+                        <span className="btn-icon">🔗</span> צפייה בדף נחיתה
+                    </button>
+
                     <button className={`btn-secondary ${isRefreshing ? 'spinning' : ''}`} onClick={handleRefresh}>
                         <span>{isRefreshing ? "↻" : "🔄"}</span> רענן נתונים
                     </button>

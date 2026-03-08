@@ -15,7 +15,7 @@ function App() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [businessName, setBusinessName] = useState(localStorage.getItem('crm_business_name') || 'טל שני - הפקת אירועים');
+  const [businessName, setBusinessName] = useState(localStorage.getItem('crm_business_name') || "Tali's Events");
 
   // Check storage on load
   useEffect(() => {
@@ -26,7 +26,7 @@ function App() {
 
     // Listener for settings changes (like business name)
     const handleStorageChange = () => {
-      setBusinessName(localStorage.getItem('crm_business_name') || 'טל שני - הפקת אירועים');
+      setBusinessName(localStorage.getItem('crm_business_name') || "Tali's Events");
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
@@ -68,7 +68,10 @@ function App() {
             <main className="main-content">
               <header className="top-header">
                 <div className="header-glass glass-card">
-                  <h1>{businessName}</h1>
+                  <div className="header-title-box">
+                    <h1>{businessName}</h1>
+                    <span className="header-subtitle">ניהול לקוחות ומשימות</span>
+                  </div>
                   <div className="user-profile">
                     <span className="user-name">טל שני</span>
                     <div className="user-avatar-small"></div>
@@ -93,7 +96,6 @@ function App() {
                   <>
                     {activeTab === 'dashboard' && <Dashboard clients={clients} setClients={setClients} SHEETDB_URL={SHEETDB_URL} fetchClients={fetchClients} />}
                     {activeTab === 'settings' && <Settings clients={clients} />}
-                    {activeTab === 'leadform' && <LeadForm SHEETDB_URL={SHEETDB_URL} onBack={() => setActiveTab('dashboard')} />}
                   </>
                 )}
               </div>
