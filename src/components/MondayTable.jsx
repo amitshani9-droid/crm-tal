@@ -9,6 +9,7 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient, i
     const [currentPage, setCurrentPage] = useState(1);
 
     // Reset to page 1 whenever the clients list changes (e.g. after search)
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     useEffect(() => { setCurrentPage(1); }, [clients]);
 
     if (!clients || clients.length === 0) {

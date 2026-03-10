@@ -1,0 +1,413 @@
+.onboarding-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(28, 25, 23, 0.95) 0%, rgba(12, 10, 9, 0.98) 100%);
+    backdrop-filter: blur(12px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Heebo', sans-serif;
+}
+
+.onboarding-card {
+    width: 100%;
+    max-width: 650px;
+    background: rgba(41, 37, 36, 0.4);
+    border: 1px solid rgba(202, 138, 4, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                0 0 15px rgba(202, 138, 4, 0.1);
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.close-wizard-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(41, 37, 36, 0.6);
+    border: 1px solid rgba(120, 113, 108, 0.2);
+    color: #a8a29e;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    transition: 0.2s;
+}
+
+.close-wizard-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Header & Progress */
+.onboarding-header {
+    padding: 40px 40px 20px;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 2;
+    transition: 0.3s;
+}
+
+.step-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(68, 64, 60, 0.5);
+    border: 1.5px solid rgba(120, 113, 108, 0.3);
+    color: rgba(168, 162, 158, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.step-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(168, 162, 158, 0.6);
+    transition: 0.3s;
+}
+
+.step-item.active .step-icon {
+    background: rgba(202, 138, 4, 0.15);
+    border-color: #ca8a04;
+    color: #ca8a04;
+    box-shadow: 0 0 15px rgba(202, 138, 4, 0.3);
+    transform: scale(1.1);
+}
+
+.step-item.active .step-label {
+    color: #ca8a04;
+    font-weight: 700;
+}
+
+.step-item.completed .step-icon {
+    background: #ca8a04;
+    border-color: #ca8a04;
+    color: white;
+}
+
+.step-connector {
+    flex: 1;
+    height: 2px;
+    background: rgba(120, 113, 108, 0.2);
+    margin: 0 -10px;
+    transform: translateY(-13px);
+    transition: 0.4s;
+}
+
+.step-connector.active {
+    background: #ca8a04;
+}
+
+/* Body */
+.onboarding-body {
+    padding: 0 40px 30px;
+    min-height: 380px;
+}
+
+.wizard-step-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.step-title-group h2 {
+    color: #fafaf9;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.step-title-group p {
+    color: #a8a29e;
+    font-size: 1rem;
+}
+
+.form-group-wizard {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group-wizard label {
+    color: #e7e5e4;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.wizard-input, .wizard-textarea {
+    background: rgba(28, 25, 23, 0.6);
+    border: 1px solid rgba(120, 113, 108, 0.3);
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: #fafaf9;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+.wizard-input:focus, .wizard-textarea:focus {
+    outline: none;
+    border-color: #ca8a04;
+    background: rgba(28, 25, 23, 0.8);
+    box-shadow: 0 0 0 3px rgba(202, 138, 4, 0.1);
+}
+
+.wizard-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.wizard-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: rgba(202, 138, 4, 0.05);
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px dashed rgba(202, 138, 4, 0.2);
+    color: #d69e2e;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Logo Upload */
+.logo-upload-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: rgba(28, 25, 23, 0.4);
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.logo-preview-wizard-large {
+    width: 100px;
+    height: 100px;
+    background: #1c1917;
+    border: 2px dashed rgba(120, 113, 108, 0.3);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.logo-preview-wizard-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 10px;
+}
+
+.logo-placeholder {
+    color: rgba(120, 113, 108, 0.4);
+}
+
+.logo-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ca8a04;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.upload-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.upload-hint {
+    font-size: 0.8rem;
+    color: #78716c;
+}
+
+/* Step 3 Card */
+.import-action-card {
+    background: rgba(202, 138, 4, 0.05);
+    border: 2px dashed rgba(202, 138, 4, 0.3);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    transition: 0.3s;
+}
+
+.import-action-card:hover {
+    background: rgba(202, 138, 4, 0.08);
+    border-color: #ca8a04;
+}
+
+.import-icon-box {
+    width: 70px;
+    height: 70px;
+    background: rgba(202, 138, 4, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ca8a04;
+}
+
+.import-text h3 {
+    color: #fafaf9;
+    font-size: 1.25rem;
+    margin-bottom: 4px;
+}
+
+.import-text p {
+    color: #a8a29e;
+    font-size: 0.9rem;
+}
+
+.import-success-toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #065f46;
+    color: #d1fae5;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Footer */
+.onboarding-footer {
+    padding: 20px 40px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-top: 1px solid rgba(120, 113, 108, 0.1);
+}
+
+.footer-spacer {
+    flex: 1;
+}
+
+.btn-wizard-primary {
+    background: #ca8a04;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s;
+    box-shadow: 0 10px 20px -5px rgba(202, 138, 4, 0.4);
+}
+
+.btn-wizard-primary:hover {
+    background: #a16207;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px rgba(202, 138, 4, 0.5);
+}
+
+.btn-wizard-secondary {
+    background: rgba(120, 113, 108, 0.2);
+    color: #fafaf9;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1px solid rgba(120, 113, 108, 0.2);
+}
+
+.btn-wizard-secondary:hover {
+    background: rgba(120, 113, 108, 0.3);
+}
+
+.btn-wizard-ghost {
+    color: #a8a29e;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px;
+    transition: 0.2s;
+}
+
+.btn-wizard-ghost:hover {
+    color: #fafaf9;
+}
+
+.pulse {
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(202, 138, 4, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(202, 138, 4, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(202, 138, 4, 0); }
+}
+
+@media (max-width: 600px) {
+    .onboarding-card {
+        border-radius: 0;
+        height: 100%;
+        max-width: none;
+    }
+    
+    .onboarding-header { padding: 30px 20px 20px; }
+    .onboarding-body { padding: 0 20px 20px; }
+    .onboarding-footer { padding: 20px; }
+    
+    .logo-upload-wrapper {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .step-label { display: none; }
+}

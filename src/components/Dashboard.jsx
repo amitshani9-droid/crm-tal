@@ -4,6 +4,7 @@ import ClientProfile from './ClientProfile';
 import MondayTable from './MondayTable';
 import StatisticsBento from './StatisticsBento';
 import AnalyticsSection from './AnalyticsSection';
+import VoiceflowWidget from './VoiceflowWidget';
 
 /**
  * Dashboard Component
@@ -20,7 +21,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
     // 1. Analytics & Stats Calculations
     const totalClients = clients.length;
-    
+
     // New leads (last 7 days based on ID timestamp)
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -31,7 +32,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
     const activePipeline = clients.filter(c => String(c.status) === 'בטיפול').length;
     const closedDeals = clients.filter(c => String(c.status) === 'סגור').length;
-    
+
     const todayStr = new Date().toISOString().split('T')[0];
     const todoToday = clients.filter(c => c.nextCall && c.nextCall.split('T')[0] === todayStr).length;
 
@@ -58,7 +59,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     const handleStatusChange = async (clientId, newStatus) => {
         const previousSnapshot = [...clients];
         // Optimistic Update
-        setClients(prev => prev.map(c => 
+        setClients(prev => prev.map(c =>
             String(c.id) === String(clientId) ? { ...c, status: newStatus } : c
         ));
 
@@ -78,7 +79,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
     const handleSaveClient = async (updatedClient) => {
         setIsSaving(true);
-        
+
         // הגנה מפני קריסה: מוודא שיש מספר טלפון לפני הפעלת startsWith
         const phone = updatedClient.phone || "";
         const formattedPhone = phone.startsWith("'") ? phone : `'${phone}`;
@@ -86,7 +87,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
         try {
             const existingClient = clients.find(c => String(c.id) === String(updatedClient.id));
-            
+
             if (existingClient) {
                 // עדכון לקוח קיים
                 const response = await fetch(`${SHEETDB_URL}/id/${String(updatedClient.id)}`, {
@@ -95,7 +96,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                     body: JSON.stringify({ data: { ...finalClientData } })
                 });
                 if (!response.ok) throw new Error("Update failed");
-                
+
                 setClients(prev => prev.map(c => String(c.id) === String(updatedClient.id) ? finalClientData : c));
             } else {
                 // הוספת לקוח חדש
@@ -105,7 +106,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                     body: JSON.stringify({ data: [finalClientData] })
                 });
                 if (!response.ok) throw new Error("Creation failed");
-                
+
                 setClients(prev => [...prev, finalClientData]);
             }
             return true; // מחזיר הצלחה
@@ -123,7 +124,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
         if (!clientToDelete) return;
         if (!window.confirm(`האם אתה בטוח שברצונך למחוק את הלקוח "${clientToDelete.contact || 'ללא שם'}"?`)) return;
 
-        console.log("Deleting ID:", clientId);
+        // console.log("Deleting ID:", clientId);
         try {
             // First attempt: delete by unique ID
             const firstResponse = await fetch(`${SHEETDB_URL}/id/${String(clientId)}`, { method: 'DELETE' });
@@ -164,8 +165,8 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     const filteredClients = clients.filter(c => {
         const query = searchTerm.toLowerCase();
         return (c.contact || "").toLowerCase().includes(query) ||
-               (c.company || "").toLowerCase().includes(query) ||
-               (c.phone || "").toLowerCase().includes(query);
+            (c.company || "").toLowerCase().includes(query) ||
+            (c.phone || "").toLowerCase().includes(query);
     });
 
     // Filter Groups based on FILTERED clients
@@ -179,7 +180,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     return (
         <div className="dashboard">
             {/* 1. Statistics Summary Tiles */}
-            <StatisticsBento 
+            <StatisticsBento
                 totalClients={totalClients}
                 newLeads={newLeads}
                 activePipeline={activePipeline}
@@ -194,20 +195,20 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
             <div className="dashboard-actions-row">
                 <div className="search-bar-container">
                     <span className="search-icon">🔍</span>
-                    <input 
-                        type="text" 
-                        placeholder="חיפוש לקוח לפי שם, חברה או טלפון..." 
+                    <input
+                        type="text"
+                        placeholder="חיפוש לקוח לפי שם, חברה או טלפון..."
                         className="search-input-glass"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                
+
                 <div className="dashboard-actions">
                     <button className="btn-primary" onClick={handleAddClient}>
                         <span className="btn-icon">✚</span> הוספת לקוח חדש
                     </button>
-                    
+
                     <button className="btn-secondary" onClick={handleExportCSV}>
                         <span className="btn-icon-excel">📥</span> ייצוא נתונים לאקסל
                     </button>
@@ -219,7 +220,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                     <button className={`btn-secondary ${isRefreshing ? 'spinning' : ''}`} onClick={handleRefresh}>
                         <span>{isRefreshing ? "↻" : "🔄"}</span> רענן נתונים
                     </button>
-                    
+
                     {refreshSuccess && <span className="refresh-toast success">עודכן בהצלחה!</span>}
                 </div>
             </div>
@@ -230,10 +231,10 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                     <h2 className="pipeline-title">
                         <span className="icon-pulse">🚨</span> משימות דחופות להיום ({todayClients.length})
                     </h2>
-                    <MondayTable 
-                        clients={todayClients} 
-                        onClientClick={handleOpenProfile} 
-                        onStatusChange={handleStatusChange} 
+                    <MondayTable
+                        clients={todayClients}
+                        onClientClick={handleOpenProfile}
+                        onStatusChange={handleStatusChange}
                         onDeleteClient={handleDeleteClient}
                     />
                 </div>
@@ -242,30 +243,30 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
             {/* 5. Main Pipeline Sections */}
             <div className="pipeline-section">
                 <h2 className="pipeline-title"><span className="status-dot new"></span> לידים שטרם טופלו ({newClients.length})</h2>
-                <MondayTable 
-                    clients={newClients} 
-                    onClientClick={handleOpenProfile} 
-                    onStatusChange={handleStatusChange} 
+                <MondayTable
+                    clients={newClients}
+                    onClientClick={handleOpenProfile}
+                    onStatusChange={handleStatusChange}
                     onDeleteClient={handleDeleteClient}
                 />
             </div>
 
             <div className="pipeline-section">
                 <h2 className="pipeline-title"><span className="status-dot in-progress"></span> בטיפול אקטיבי ({inProgressClients.length})</h2>
-                <MondayTable 
-                    clients={inProgressClients} 
-                    onClientClick={handleOpenProfile} 
-                    onStatusChange={handleStatusChange} 
+                <MondayTable
+                    clients={inProgressClients}
+                    onClientClick={handleOpenProfile}
+                    onStatusChange={handleStatusChange}
                     onDeleteClient={handleDeleteClient}
                 />
             </div>
 
             <div className="pipeline-section">
                 <h2 className="pipeline-title"><span className="status-dot closed"></span> עסקאות ואירועים שנסגרו ({closedClients.length})</h2>
-                <MondayTable 
-                    clients={closedClients} 
-                    onClientClick={handleOpenProfile} 
-                    onStatusChange={handleStatusChange} 
+                <MondayTable
+                    clients={closedClients}
+                    onClientClick={handleOpenProfile}
+                    onStatusChange={handleStatusChange}
                     onDeleteClient={handleDeleteClient}
                 />
             </div>
@@ -278,6 +279,8 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                 onSave={handleSaveClient}
                 isSaving={isSaving}
             />
+            
+            <VoiceflowWidget />
         </div>
     );
 }

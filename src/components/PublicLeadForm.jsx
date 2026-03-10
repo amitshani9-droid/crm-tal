@@ -1,187 +1,162 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { User, Phone, Mail, Building2, CheckCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import './PublicLeadForm.css';
 
-const SHEETDB_URL = import.meta.env.VITE_SHEETDB_URL;
-
 export default function PublicLeadForm() {
-    // Dynamic Settings: Allow override via Dashboard, else use defaults
-    const isMaintenance = localStorage.getItem('crm_maintenance_mode') === 'true';
-    const thankYouMsg = localStorage.getItem('crm_thank_you_msg') || 'תודה! הפנייה התקבלו. נחזור אליכם קרוב ליצירת חוויה משותפת.';
-    const savedBusinessName = localStorage.getItem('crm_business_name');
+    const { slug } = useParams();
+    const [searchParams] = useSearchParams();
     
-    // Core Branding (Fixed per request)
-    const brandingTitle = "טל שני | חוויות שמחברות אנשים";
-    const mainHeadline = "חוויות עם ערך שמחברות אנשים";
-    const description = "סטייל, תוכן וערך חברתי שנשאר הרבה אחרי שהאירוע נגמר. אני יוצרת חוויות לארגונים שמחפשים יותר מעוד אירוע – ימים שמחברים בין אנשים, צוותים ותחושת משמעות.";
-    const buttonText = "בואו נחבר את האנשים שלכם";
-
-    const [formData, setFormData] = useState({
-        contact: '',
-        phone: '',
-        email: '',
-        company: ''
+    const [profile, setProfile] = useState({
+        userId: searchParams.get('u'),
+        businessName: "CRM System",
+        loading: true,
+        error: null,
+        settings: {
+            brand_color: '#4e5df0',
+            business_description: 'ברוכים הבאים לדף הנחיתה שלנו.',
+            custom_statuses: ["חדש"]
+        }
     });
 
+    const [formData, setFormData] = useState({ contact: '', phone: '', email: '', company: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
+    useEffect(() => {
+        const resolveSlug = async () => {
+            let query = supabase.from('profiles').select('id, business_name, settings');
+            
+            if (slug) {
+                query = query.eq('slug', slug);
+            } else if (searchParams.get('u')) {
+                query = query.eq('id', searchParams.get('u'));
+            } else {
+                setProfile(prev => ({ ...prev, loading: false }));
+                return;
+            }
+
+            try {
+                const { data, error } = await query.single();
+                if (error || !data) throw new Error("Link invalid");
+
+                setProfile({
+                    userId: data.id,
+                    businessName: data.business_name || "עסק ללא שם",
+                    loading: false,
+                    error: null,
+                    settings: {
+                        ...profile.settings,
+                        ...data.settings
+                    }
+                });
+            } catch (err) {
+                console.error("Resolution failed:", err.message);
+                setProfile(prev => ({ ...prev, loading: false, error: "קישור לא תקין" }));
+            }
+        };
+
+        resolveSlug();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [slug, searchParams]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        if (name === 'phone') {
+            const onlyNums = value.replace(/[^\d]/g, '');
+            setFormData(prev => ({ ...prev, [name]: onlyNums }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!profile.userId) return alert("שגיאה בקישור.");
+        
+        if (formData.phone.length < 9) {
+            alert("נא להזין מספר טלפון חוקי בן 9-10 ספרות.");
+            return;
+        }
+
         setIsLoading(true);
 
-        // יצירת אובייקט הליד עם שמות השדות המדויקים מהגליון (Column Headers)
         const newLead = {
-            contact: formData.contact,         // עמודה B (contact)
-            phone: `'${formData.phone}`,      // עמודה C (phone) - גרש לשמירה על ה-0
-            email: formData.email || "",      // עמודה D (email)
-            company: formData.company || "",  // עמודה E (company)
-            history: "ליד חדש מהאתר",          // עמודה F (history)
-            nextCall: "",                     // עמודה G (nextCall)
-            status: "חדש",                    // עמודה H (status) - קריטי ל-Pipeline
-            id: Date.now().toString(),        // עמודה I (id) - מזהה ייחודי
+            user_id: profile.userId,
+            contact: formData.contact,
+            phone: formData.phone.replace("'", ""),
+            email: formData.email,
+            company: formData.company,
+            history: `ליד חדש מדף הנחיתה (${slug || 'ID-based'})`,
+            status: profile.settings.custom_statuses?.[0] || "חדש",
             avatarIndex: Math.floor(Math.random() * 4) + 1
         };
 
         try {
-            const response = await fetch(SHEETDB_URL, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ data: [newLead] })
-            });
-
-            if (response.ok) {
-                setIsSubmitted(true);
-            } else {
-                throw new Error("Failed to send lead");
-            }
-        } catch (error) {
-            console.error("Error submitting lead:", error);
-            alert("חלה שגיאה בשליחת הפרטים. כדאי לנסות שוב.");
+            const { error } = await supabase.from('clients').insert([newLead]);
+            if (error) throw error;
+            setIsSubmitted(true);
+        } catch (err) {
+            console.error("Submission error:", err);
+            alert("שגיאה בשליחה.");
         } finally {
             setIsLoading(false);
         }
     };
 
-    /**
-     * SUCCESS VIEW
-     */
-    if (isSubmitted) {
-        return (
-            <div className="public-form-container">
-                <div className="public-form-card success-card">
-                    <div className="success-icon">✨</div>
-                    <h2>נשלח בהצלחה!</h2>
-                    <p>{thankYouMsg}</p>
+    if (profile.loading) return <div className="public-form-container"><div className="placeholder-view" style={{color: '#000'}}>טוען...</div></div>;
+    if (profile.error) return <div className="public-form-container"><h2 style={{color:'#000'}}>קישור לא תקין</h2></div>;
+    if (isSubmitted) return (
+        <div className="public-form-container" style={{ '--brand-color': profile.settings.brand_color }}>
+            <div className="success-card">
+                <div className="success-icon-wrap">
+                    <CheckCircle size={80} strokeWidth={1.5} />
                 </div>
+                <h2>תודה!</h2>
+                <p>הפרטים נשלחו בהצלחה ל-{profile.businessName}.<br/>ניצור קשר בהקדם.</p>
             </div>
-        );
-    }
+        </div>
+    );
 
-    /**
-     * MAINTENANCE VIEW
-     */
-    if (isMaintenance) {
-        return (
-            <div className="public-form-container">
-                <div className="public-form-card maintenance-card">
-                    <div className="success-icon">⚙️</div>
-                    <h2>מבצעים תחזוקה</h2>
-                    <p>הטופס אינו פעיל זמנית. נחזור בקרוב מאוד!</p>
-                </div>
-            </div>
-        );
-    }
+    const brandColor = profile.settings.brand_color;
+    const logoUrl = profile.settings.logo_url;
 
-    /**
-     * MAIN LANDING PAGE VIEW
-     */
     return (
-        <div className="public-form-container">
+        <div className="public-form-container" style={{ '--brand-color': brandColor }}>
             <div className="public-form-card">
-                {/* Branding & Marketing */}
-                <div className="branding-header">
-                    <span>{brandingTitle}</span>
+                <div className="branding-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px' }}>
+                    {logoUrl && (
+                        <img src={logoUrl} alt="Logo" style={{ width: '45px', height: '45px', objectFit: 'contain', borderRadius: '10px' }} />
+                    )}
+                    <span style={{ color: brandColor }}>{profile.businessName}</span>
                 </div>
                 
                 <div className="marketing-text">
-                    <h1>{mainHeadline}</h1>
-                    <p>{description}</p>
+                    <h1>השאירו פרטים ונחזור אליכם</h1>
+                    <p>{profile.settings.business_description}</p>
                 </div>
 
-                {/* Modern Form Wrapper */}
                 <form onSubmit={handleSubmit} className="public-lead-form">
-                    <div className="form-group">
-                        <label>שם מלא *</label>
-                        <div className="input-with-icon">
-                            <input
-                                type="text"
-                                name="contact"
-                                required
-                                placeholder="ישראל ישראלי"
-                                value={formData.contact}
-                                onChange={handleChange}
-                            />
-                            <span className="input-icon">👤</span>
-                        </div>
+                    <div className="input-with-icon">
+                        <input name="contact" required placeholder="שם מלא *" value={formData.contact} onChange={handleChange} />
+                        <User className="input-icon-lucide" size={20} />
                     </div>
-
-                    <div className="form-group">
-                        <label>טלפון *</label>
-                        <div className="input-with-icon">
-                            <input
-                                type="tel"
-                                name="phone"
-                                required
-                                placeholder="050-0000000"
-                                value={formData.phone}
-                                onChange={handleChange}
-                            />
-                            <span className="input-icon">📱</span>
-                        </div>
+                    <div className="input-with-icon">
+                        <input type="tel" name="phone" required placeholder="טלפון פנייה *" value={formData.phone} onChange={handleChange} dir="rtl" />
+                        <Phone className="input-icon-lucide" size={20} />
                     </div>
-
-                    <div className="form-group">
-                        <label>אימייל *</label>
-                        <div className="input-with-icon">
-                            <input
-                                type="email"
-                                name="email"
-                                required
-                                placeholder="email@example.com"
-                                value={formData.email}
-                                onChange={handleChange}
-                            />
-                            <span className="input-icon">✉️</span>
-                        </div>
+                    <div className="input-with-icon">
+                        <input type="email" name="email" placeholder="אימייל (אופציונלי)" value={formData.email} onChange={handleChange} />
+                        <Mail className="input-icon-lucide" size={20} />
                     </div>
-
-                    <div className="form-group">
-                        <label>שם החברה / הארגון *</label>
-                        <div className="input-with-icon">
-                            <input
-                                type="text"
-                                name="company"
-                                required
-                                placeholder="שם החברה..."
-                                value={formData.company}
-                                onChange={handleChange}
-                            />
-                            <span className="input-icon">🏢</span>
-                        </div>
+                    <div className="input-with-icon">
+                        <input name="company" placeholder="שם החברה (אופציונלי)" value={formData.company} onChange={handleChange} />
+                        <Building2 className="input-icon-lucide" size={20} />
                     </div>
-
-                    <button type="submit" className="submit-btn" disabled={isLoading}>
-                        {isLoading ? (
-                            <span className="spin-animation">◌</span>
-                        ) : buttonText}
+                    
+                    <button type="submit" className="submit-btn" disabled={isLoading || formData.phone.length < 9} style={{ backgroundColor: '#4f46e5' }}>
+                        {isLoading ? "שולח..." : "שלח פרטים"}
                     </button>
                 </form>
             </div>

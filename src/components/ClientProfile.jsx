@@ -6,11 +6,10 @@ import FileUploader from './FileUploader';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-function ClientProfile({ client, isOpen, onClose, onSave, isSaving }) {
+function ClientProfile({ client, isOpen, onClose, onSave, isSaving, onDelete }) {
     const [formData, setFormData] = useState(null);
     const [isExportingPDF, setIsExportingPDF] = useState(false);
     const drawerContentRef = useRef(null);
-
 
     useEffect(() => {
         if (client) {
@@ -30,6 +29,15 @@ function ClientProfile({ client, isOpen, onClose, onSave, isSaving }) {
         if (success) onClose();
     };
 
+    const handleDelete = async () => {
+        if (window.confirm(`האם למחוק את הלקוח "${formData.contact || 'ללא שם'}"?`)) {
+            if (onDelete) {
+                await onDelete(formData.id);
+                onClose();
+            }
+        }
+    };
+
     const handleExportPDF = async () => {
         const element = drawerContentRef.current;
         if (!element) return;
@@ -44,7 +52,6 @@ function ClientProfile({ client, isOpen, onClose, onSave, isSaving }) {
             const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            // If content is taller than one page, add more pages
             const pageHeight = pdf.internal.pageSize.getHeight();
             let y = 0;
             while (y < pdfHeight) {
@@ -79,11 +86,9 @@ function ClientProfile({ client, isOpen, onClose, onSave, isSaving }) {
             return;
         }
         
-        // 1. Clean Phone: Remove ', - and spaces
         const rawPhone = client.phone || "";
         const cleanPhone = rawPhone.replace(/['\s-]/g, '');
         
-        // 2. Format: If starts with '0', prepend 972
         let finalPhone = cleanPhone;
         if (cleanPhone.startsWith('0')) {
             finalPhone = '972' + cleanPhone.substring(1);
@@ -111,6 +116,9 @@ function ClientProfile({ client, isOpen, onClose, onSave, isSaving }) {
                         <button onClick={() => sendToMomWhatsApp(formData)} className="whatsapp-btn action-btn">
                             💬 שלחי לעצמך
                         </button>
+                        <button onClick={handleDelete} className="action-btn delete-btn" style={{ color: 'var(--clr-error, #ff4d4d)' }}>
+                            🗑️ מחק
+                        </button>
                         <button className="btn-primary custom-save action-btn" onClick={handleSave} disabled={isSaving}>
                             {isSaving ? "שומר..." : "שמור שינויים"}
                         </button>
@@ -118,7 +126,6 @@ function ClientProfile({ client, isOpen, onClose, onSave, isSaving }) {
                 </div>
 
                 <div className="drawer-content" ref={drawerContentRef}>
-                    {/* Header Area */}
                     <div className="profile-header-info">
                         <div className={`avatar-large gradient-${formData.avatarIndex || 1}`}>
                             <img
@@ -148,7 +155,6 @@ function ClientProfile({ client, isOpen, onClose, onSave, isSaving }) {
                         </div>
                     </div>
 
-                    {/* Info Grid */}
                     <div className="info-grid">
                         <div className="info-group">
                             <label>סטטוס</label>
@@ -159,6 +165,7 @@ function ClientProfile({ client, isOpen, onClose, onSave, isSaving }) {
                             >
                                 <option value="חדש">🔵 חדש</option>
                                 <option value="בטיפול">🟠 בטיפול</option>
+                                <option value="נשלחה הצעת מחיר">📄 נשלחה הצעת מחיר</option>
                                 <option value="סגור">🟢 סגור</option>
                             </select>
                         </div>
@@ -193,21 +200,14 @@ function ClientProfile({ client, isOpen, onClose, onSave, isSaving }) {
 
                     <div className="divider"></div>
 
-                    {/* Rich Area */}
-                    <ConversationLog
-                        history={formData.history || ''}
-                        onChange={(val) => handleChange('history', val)}
-                    />
+                    <ConversationLog clientId={formData.id} />
 
                     <NextCallReminder
                         date={formData.nextCall || ''}
                         onChange={(val) => handleChange('nextCall', val)}
                     />
 
-                    <FileUploader
-                        documents={formData.documents || []}
-                        onChange={(docs) => handleChange('documents', docs)}
-                    />
+                    <FileUploader clientId={formData.id} />
                 </div>
             </div>
         </>

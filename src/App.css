@@ -92,7 +92,7 @@
   flex: 1;
   margin-right: var(--sidebar-width);
   /* RTL margin */
-  padding: var(--space-xl);
+  padding: 48px;
   display: flex;
   flex-direction: column;
   max-width: 1600px;
@@ -141,6 +141,15 @@
   display: flex;
   flex-direction: column;
   position: relative;
+}
+
+.admin-table-row {
+  border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+  transition: background-color 0.2s ease;
+}
+
+.admin-table-row:hover {
+  background-color: #f8fafc !important;
 }
 
 .placeholder-view {
