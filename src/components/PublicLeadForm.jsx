@@ -89,8 +89,7 @@ export default function PublicLeadForm() {
             email: formData.email,
             company: formData.company,
             history: `ליד חדש מדף הנחיתה (${slug || 'ID-based'})`,
-            status: profile.settings.custom_statuses?.[0] || "חדש",
-            avatarIndex: Math.floor(Math.random() * 4) + 1
+            status: profile.settings.custom_statuses?.[0] || "חדש"
         };
 
         try {
@@ -105,60 +104,67 @@ export default function PublicLeadForm() {
         }
     };
 
-    if (profile.loading) return <div className="public-form-container"><div className="placeholder-view" style={{color: '#000'}}>טוען...</div></div>;
-    if (profile.error) return <div className="public-form-container"><h2 style={{color:'#000'}}>קישור לא תקין</h2></div>;
+    if (profile.loading) return <div className="public-form-wrapper"><div className="placeholder-view">טוען...</div></div>;
+    if (profile.error) return <div className="public-form-wrapper"><h2 className="error-text">קישור לא תקין</h2></div>;
     if (isSubmitted) return (
-        <div className="public-form-container" style={{ '--brand-color': profile.settings.brand_color }}>
-            <div className="success-card">
+        <div className="public-form-wrapper" style={{ '--brand-color': profile.settings.brand_color || '#d97706' }}>
+            <div className="success-glass-card">
                 <div className="success-icon-wrap">
                     <CheckCircle size={80} strokeWidth={1.5} />
                 </div>
-                <h2>תודה!</h2>
+                <h2>תודה יקיריי!</h2>
                 <p>הפרטים נשלחו בהצלחה ל-{profile.businessName}.<br/>ניצור קשר בהקדם.</p>
             </div>
         </div>
     );
 
-    const brandColor = profile.settings.brand_color;
+    const brandColor = profile.settings.brand_color || '#d97706';
     const logoUrl = profile.settings.logo_url;
 
     return (
-        <div className="public-form-container" style={{ '--brand-color': brandColor }}>
-            <div className="public-form-card">
-                <div className="branding-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px' }}>
-                    {logoUrl && (
-                        <img src={logoUrl} alt="Logo" style={{ width: '45px', height: '45px', objectFit: 'contain', borderRadius: '10px' }} />
-                    )}
-                    <span style={{ color: brandColor }}>{profile.businessName}</span>
-                </div>
-                
-                <div className="marketing-text">
-                    <h1>השאירו פרטים ונחזור אליכם</h1>
-                    <p>{profile.settings.business_description}</p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="public-lead-form">
-                    <div className="input-with-icon">
-                        <input name="contact" required placeholder="שם מלא *" value={formData.contact} onChange={handleChange} />
-                        <User className="input-icon-lucide" size={20} />
-                    </div>
-                    <div className="input-with-icon">
-                        <input type="tel" name="phone" required placeholder="טלפון פנייה *" value={formData.phone} onChange={handleChange} dir="rtl" />
-                        <Phone className="input-icon-lucide" size={20} />
-                    </div>
-                    <div className="input-with-icon">
-                        <input type="email" name="email" placeholder="אימייל (אופציונלי)" value={formData.email} onChange={handleChange} />
-                        <Mail className="input-icon-lucide" size={20} />
-                    </div>
-                    <div className="input-with-icon">
-                        <input name="company" placeholder="שם החברה (אופציונלי)" value={formData.company} onChange={handleChange} />
-                        <Building2 className="input-icon-lucide" size={20} />
+        <div className="public-form-wrapper" style={{ '--brand-color': brandColor }}>
+            <div className="public-split-card glassmorphism">
+                {/* Premium Stone & Gold Business Side (Replaces any old duplicate headers) */}
+                <div className="premium-business-side">
+                    <div className="stone-gold-bg-effect"></div>
+                    <div className="branding-header">
+                        {logoUrl && (
+                            <img src={logoUrl} alt="Logo" className="business-logo" />
+                        )}
+                        <span className="business-name" style={{ color: brandColor }}>{profile.businessName}</span>
                     </div>
                     
-                    <button type="submit" className="submit-btn" disabled={isLoading || formData.phone.length < 9} style={{ backgroundColor: '#4f46e5' }}>
-                        {isLoading ? "שולח..." : "שלח פרטים"}
-                    </button>
-                </form>
+                    <div className="marketing-text">
+                        <h1>השאירו פרטים ונחזור אליכם</h1>
+                        <p>{profile.settings.business_description}</p>
+                    </div>
+                </div>
+
+                {/* Lead Form Side */}
+                <div className="lead-form-side">
+                    <form onSubmit={handleSubmit} className="public-lead-form">
+                        <div className="input-with-icon">
+                            <input name="contact" required placeholder="שם מלא *" value={formData.contact} onChange={handleChange} />
+                            <User className="input-icon-lucide" size={20} />
+                        </div>
+                        <div className="input-with-icon">
+                            <input type="tel" name="phone" required placeholder="טלפון פנייה *" value={formData.phone} onChange={handleChange} dir="rtl" />
+                            <Phone className="input-icon-lucide" size={20} />
+                        </div>
+                        <div className="input-with-icon">
+                            <input type="email" name="email" placeholder="אימייל (אופציונלי)" value={formData.email} onChange={handleChange} />
+                            <Mail className="input-icon-lucide" size={20} />
+                        </div>
+                        <div className="input-with-icon">
+                            <input name="company" placeholder="שם החברה (אופציונלי)" value={formData.company} onChange={handleChange} />
+                            <Building2 className="input-icon-lucide" size={20} />
+                        </div>
+                        
+                        <button type="submit" className="submit-btn gold-btn" disabled={isLoading || formData.phone.length < 9}>
+                            {isLoading ? "שולח..." : "שלח פרטים"}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     );

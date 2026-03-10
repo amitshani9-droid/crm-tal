@@ -16,7 +16,7 @@ const VoiceflowWidget = () => {
           });
         }
       }
-      v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; 
+      v.src = "https://cdn.voiceflow.com/widget/bundle.mjs"; 
       v.type = "text/javascript"; 
       if (s && s.parentNode) {
         s.parentNode.insertBefore(v, s);

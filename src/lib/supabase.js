@@ -7,4 +7,28 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase credentials missing. Ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const customFetch = async (url, options) => {
+  console.log('🚀 [Network Interceptor] Request:', options.method, url);
+  if (options.body) {
+    try {
+      console.log('📦 [Network Interceptor] Payload:', JSON.parse(options.body));
+    } catch {
+      console.log('📦 [Network Interceptor] Payload:', options.body);
+    }
+  }
+  
+  const response = await fetch(url, options);
+  
+  const cloned = response.clone();
+  const resBody = await cloned.text();
+  
+  console.log(`📥 [Network Interceptor] Response (${response.status}):`, resBody);
+  
+  return response;
+};
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  global: {
+    fetch: customFetch
+  }
+});

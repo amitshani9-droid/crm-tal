@@ -5,15 +5,19 @@ import MondayTable from './MondayTable';
 import StatisticsBento from './StatisticsBento';
 import AnalyticsSection from './AnalyticsSection';
 import VoiceflowWidget from './VoiceflowWidget';
+import CSVImportModal from './CSVImportModal';
+import { supabase } from '../lib/supabase';
+import { FileSpreadsheet } from 'lucide-react';
 
 /**
  * Dashboard Component
  * The central command center of the CRM. Features advanced analytics, 
  * summary tiles, and the main client pipeline.
  */
-function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
+function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients, session, profile }) {
     const [selectedClient, setSelectedClient] = useState(null);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [refreshSuccess, setRefreshSuccess] = useState(false);
@@ -64,16 +68,16 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
         ));
 
         try {
-            const response = await fetch(`${SHEETDB_URL}/id/${String(clientId)}`, {
-                method: 'PATCH',
-                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: { status: newStatus } })
-            });
-            if (!response.ok) throw new Error("Backend update failed");
+            const { error } = await supabase
+                .from('clients')
+                .update({ status: newStatus })
+                .eq('id', clientId);
+
+            if (error) throw error;
         } catch (error) {
             console.error("Status update failed", error);
             setClients(previousSnapshot);
-            alert("העדכון נכשל בענן. הנתונים שוחזרו.");
+            alert(`העדכון נכשל בענן. פירוט השגיאה: ${error.message || ''}`);
         }
     };
 
@@ -83,36 +87,47 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
         // הגנה מפני קריסה: מוודא שיש מספר טלפון לפני הפעלת startsWith
         const phone = updatedClient.phone || "";
         const formattedPhone = phone.startsWith("'") ? phone : `'${phone}`;
-        const finalClientData = { ...updatedClient, phone: formattedPhone };
-
+        
         try {
             const existingClient = clients.find(c => String(c.id) === String(updatedClient.id));
+            const isTempId = String(updatedClient.id).startsWith('temp_');
 
-            if (existingClient) {
+            if (existingClient && !isTempId) {
                 // עדכון לקוח קיים
-                const response = await fetch(`${SHEETDB_URL}/id/${String(updatedClient.id)}`, {
-                    method: 'PATCH',
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ data: { ...finalClientData } })
-                });
-                if (!response.ok) throw new Error("Update failed");
+                const { id, avatarIndex, ...finalClientData } = updatedClient;
+                finalClientData.phone = formattedPhone;
 
-                setClients(prev => prev.map(c => String(c.id) === String(updatedClient.id) ? finalClientData : c));
+                const { data, error } = await supabase
+                    .from('clients')
+                    .update(finalClientData)
+                    .eq('id', updatedClient.id)
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                setClients(prev => prev.map(c => String(c.id) === String(updatedClient.id) ? data : c));
             } else {
                 // הוספת לקוח חדש
-                const response = await fetch(SHEETDB_URL, {
-                    method: 'POST',
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ data: [finalClientData] })
-                });
-                if (!response.ok) throw new Error("Creation failed");
+                const { id, avatarIndex, ...insertData } = updatedClient;
+                insertData.phone = formattedPhone;
+                insertData.user_id = session?.user?.id; // Validation Check: Make sure user_id is injected contextually
 
-                setClients(prev => [...prev, finalClientData]);
+                const { data, error } = await supabase
+                    .from('clients')
+                    .insert([insertData])
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                setClients(prev => [...prev, data]);
             }
             return true; // מחזיר הצלחה
         } catch (error) {
-            console.error(error);
-            alert("שגיאה: השמירה בענן נכשלה. בדוק חיבור לאינטרנט.");
+            console.error("Supabase Save Error:", error);
+            const errStr = typeof error === 'object' ? JSON.stringify(error, null, 2) : error;
+            alert(`שגיאה בהכנסת נתונים (בדוק קונסול - רשת):\n${error.message || ''}\n\nפירוט הסרוור:\n${errStr}`);
             return false; // מחזיר כישלון
         } finally {
             setIsSaving(false);
@@ -124,38 +139,27 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
         if (!clientToDelete) return;
         if (!window.confirm(`האם אתה בטוח שברצונך למחוק את הלקוח "${clientToDelete.contact || 'ללא שם'}"?`)) return;
 
-        // console.log("Deleting ID:", clientId);
         try {
-            // First attempt: delete by unique ID
-            const firstResponse = await fetch(`${SHEETDB_URL}/id/${String(clientId)}`, { method: 'DELETE' });
-            const result = await firstResponse.json();
+            const { error } = await supabase
+                .from('clients')
+                .delete()
+                .eq('id', clientId);
 
-            if (result.deleted > 0) {
-                // Primary delete succeeded — remove from local state
-                setClients(prev => prev.filter(client => String(client.id) !== String(clientId)));
-                return;
-            }
+            if (error) throw error;
 
-            // Fallback: delete by contact name when ID column was empty
-            if (clientToDelete.contact) {
-                await fetch(`${SHEETDB_URL}/contact/${encodeURIComponent(clientToDelete.contact)}`, { method: 'DELETE' });
-            }
-
-            // Remove from local state regardless — the row was likely already absent or matched by name
             setClients(prev => prev.filter(client => String(client.id) !== String(clientId)));
         } catch (error) {
             console.error("Delete failed", error);
-            alert("הייתה שגיאה במחיקת הלקוח.");
+            alert(`הייתה שגיאה במחיקת הלקוח. ${error.message || ''}`);
         }
     };
 
     const handleAddClient = () => {
         const newClient = {
-            id: String(Date.now()),
+            id: `temp_${Date.now()}`,
             status: "חדש",
             contact: "", phone: "", email: "", role: "", company: "",
-            history: "", nextCall: "", documents: [],
-            avatarIndex: Math.floor(Math.random() * 3) + 1
+            history: "", nextCall: "", documents: []
         };
         handleOpenProfile(newClient);
     };
@@ -207,6 +211,14 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                 <div className="dashboard-actions">
                     <button className="btn-primary" onClick={handleAddClient}>
                         <span className="btn-icon">✚</span> הוספת לקוח חדש
+                    </button>
+
+                    <button 
+                        className="btn-secondary" 
+                        onClick={() => setIsCSVModalOpen(true)}
+                        style={{ border: '1px solid #d97706', color: '#b45309', backgroundColor: '#fafaf9', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}
+                    >
+                        <FileSpreadsheet size={18} /> ייבוא מאקסל
                     </button>
 
                     <button className="btn-secondary" onClick={handleExportCSV}>
@@ -278,6 +290,17 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
                 onClose={handleCloseProfile}
                 onSave={handleSaveClient}
                 isSaving={isSaving}
+            />
+
+            <CSVImportModal 
+                isOpen={isCSVModalOpen} 
+                onClose={() => setIsCSVModalOpen(false)} 
+                sessionId={session?.user?.id} 
+                onImportComplete={(msg) => { 
+                    alert(msg); 
+                    handleRefresh(); 
+                }} 
+                brandColor={profile?.settings?.brand_color || '#d97706'} 
             />
             
             <VoiceflowWidget />
