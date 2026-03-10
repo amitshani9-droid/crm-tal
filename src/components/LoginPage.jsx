@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import './LoginPage.css';
 
-// Hardcoded Password - easy to change here
-const MASTER_PASSWORD = "tal0203";
+// Password is sourced from .env.local (VITE_ADMIN_PASSWORD)
+// Settings.jsx can override it at runtime via localStorage.
+const ENV_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
 
 export default function LoginPage({ onLoginSuccess }) {
     const [password, setPassword] = useState('');
@@ -13,14 +14,18 @@ export default function LoginPage({ onLoginSuccess }) {
         e.preventDefault();
         setLoading(true);
 
-        const savedPassword = localStorage.getItem('crm_master_password') || 'tal0203';
+        // Prefer runtime override from Settings; fall back to build-time env variable.
+        const savedPassword = localStorage.getItem('crm_master_password') || ENV_PASSWORD;
 
         // Simulate slight delay for premium feel
         setTimeout(() => {
             if (password === savedPassword) {
                 setError(false);
-                // Store session in localStorage so user stays logged in
-                localStorage.setItem('crm_auth_token', 'authenticated');
+                // Store a unique session token + 24h expiry so a static string can't be forged
+                const token = crypto.randomUUID();
+                const expiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+                localStorage.setItem('crm_auth_token', token);
+                localStorage.setItem('crm_auth_expiry', String(expiry));
                 onLoginSuccess();
             } else {
                 setError(true);

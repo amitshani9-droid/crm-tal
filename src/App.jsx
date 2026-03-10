@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -7,7 +7,7 @@ import LoginPage from './components/LoginPage';
 import Settings from './components/Settings';
 import './App.css';
 
-const SHEETDB_URL = "https://sheetdb.io/api/v1/y933qp6w0yxj9";
+const SHEETDB_URL = import.meta.env.VITE_SHEETDB_URL;
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -18,9 +18,14 @@ function App() {
 
   // Check storage on load
   useEffect(() => {
-    const authStatus = localStorage.getItem('crm_auth_token');
-    if (authStatus === 'authenticated') {
+    const authToken = localStorage.getItem('crm_auth_token');
+    const authExpiry = parseInt(localStorage.getItem('crm_auth_expiry') || '0', 10);
+    if (authToken && Date.now() < authExpiry) {
       setIsAuthenticated(true);
+    } else {
+      // Token missing or expired — clear stale data
+      localStorage.removeItem('crm_auth_token');
+      localStorage.removeItem('crm_auth_expiry');
     }
 
     // Listener for settings changes (like business name)
@@ -31,46 +36,35 @@ function App() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  // Fetch clients from SheetDB
-  const fetchClients = async () => {
+  // Fetch clients from SheetDB — wrapped in useCallback to maintain a stable
+  // reference and allow safe inclusion in useEffect dependency arrays.
+  const fetchClients = useCallback(async () => {
     try {
       const res = await fetch(SHEETDB_URL);
       const data = await res.json();
       
-      const now = Date.now();
-      // Use for...of to allow async/await inside the loop for sequential patching if needed
-      const sanitizedData = [];
-      
-      for (let i = 0; i < data.length; i++) {
-        let item = data[i];
-        // If ID is missing or is an old placeholder, fix it permanently
+        const now = Date.now();
+      const sanitizedData = data.map((item, i) => {
+        // If ID is missing or is an old placeholder, assign a new local ID.
+        // Do NOT patch back to the sheet — a contact-name match could corrupt
+        // rows with duplicate names. The new ID is persisted on the next real save.
         if (!item.id || String(item.id).startsWith('row-')) {
-          const newId = String(now + i);
-          
-          // Sync back to SheetDB using contact as identifier (if available)
-          if (item.contact) {
-            fetch(`${SHEETDB_URL}/contact/${encodeURIComponent(item.contact)}`, {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ data: { id: newId } })
-            }).catch(err => console.error("ID sync failed", err));
-          }
-          item = { ...item, id: newId };
+          return { ...item, id: String(now + i) };
         }
-        sanitizedData.push(item);
-      }
+        return item;
+      });
       
       setClients(sanitizedData);
     } catch (err) {
       console.error("Failed to fetch clients from SheetDB", err);
     }
-  };
+  }, [SHEETDB_URL]);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchClients().then(() => setLoading(false));
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchClients]);
 
   return (
     <Routes>
@@ -95,6 +89,7 @@ function App() {
                     <button
                       onClick={() => {
                         localStorage.removeItem('crm_auth_token');
+                        localStorage.removeItem('crm_auth_expiry');
                         setIsAuthenticated(false);
                       }}
                       style={{ marginLeft: '10px', fontSize: '0.8rem', color: 'var(--clr-text-secondary)', cursor: 'pointer', background: 'none', border: 'none' }}

@@ -1,19 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { getInitials } from '../utils/formatters';
 import ConversationLog from './ConversationLog';
 import NextCallReminder from './NextCallReminder';
 import FileUploader from './FileUploader';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
-function ClientProfile({ client, isOpen, onClose, onSave }) {
+function ClientProfile({ client, isOpen, onClose, onSave, isSaving }) {
     const [formData, setFormData] = useState(null);
+    const [isExportingPDF, setIsExportingPDF] = useState(false);
+    const drawerContentRef = useRef(null);
 
-    const getInitials = (name) => {
-        if (!name) return "?";
-        const parts = name.trim().split(" ");
-        if (parts.length > 1) {
-            return (parts[0][0] + parts[1][0]).toUpperCase();
-        }
-        return parts[0][0].toUpperCase();
-    };
 
     useEffect(() => {
         if (client) {
@@ -33,8 +30,36 @@ function ClientProfile({ client, isOpen, onClose, onSave }) {
         if (success) onClose();
     };
 
-    const handleExportPDF = () => {
-        window.print();
+    const handleExportPDF = async () => {
+        const element = drawerContentRef.current;
+        if (!element) return;
+        setIsExportingPDF(true);
+        try {
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#1a1a2e'
+            });
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            // If content is taller than one page, add more pages
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            let y = 0;
+            while (y < pdfHeight) {
+                if (y > 0) pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, -y, pdfWidth, pdfHeight);
+                y += pageHeight;
+            }
+            const clientName = formData?.contact || 'לקוח';
+            pdf.save(`${clientName}_CRM_Profile.pdf`);
+        } catch (err) {
+            console.error('PDF export failed', err);
+            alert('ייצוא ה-PDF נכשל. נסה שנית.');
+        } finally {
+            setIsExportingPDF(false);
+        }
     };
 
     const sendToMomWhatsApp = (client) => {
@@ -44,7 +69,8 @@ function ClientProfile({ client, isOpen, onClose, onSave }) {
 🏢 חברה: ${client.company || 'מידע חסר'}%0A
 📅 תזכורת: ${client.nextCall ? new Date(client.nextCall).toLocaleString('he-IL') : 'מידע חסר'}`;
 
-        window.open(`https://wa.me/972544866372?text=${message}`, '_blank');
+        const ownerPhone = import.meta.env.VITE_WHATSAPP_PHONE;
+        window.open(`https://wa.me/${ownerPhone}?text=${message}`, '_blank');
     };
 
     const sendToClientWhatsApp = (client) => {
@@ -76,8 +102,8 @@ function ClientProfile({ client, isOpen, onClose, onSave }) {
                 <div className="drawer-header no-print">
                     <button className="close-btn action-btn" onClick={onClose}>✕</button>
                     <div className="header-actions">
-                        <button onClick={handleExportPDF} className="action-btn btn-secondary">
-                            📄 ייצוא ל-PDF
+                        <button onClick={handleExportPDF} className="action-btn btn-secondary" disabled={isExportingPDF}>
+                            {isExportingPDF ? '⏳ מייצא...' : '📄 ייצוא ל-PDF'}
                         </button>
                         <button onClick={() => sendToClientWhatsApp(formData)} className="whatsapp-client-btn action-btn">
                             💬 הודעה ללקוח
@@ -85,11 +111,13 @@ function ClientProfile({ client, isOpen, onClose, onSave }) {
                         <button onClick={() => sendToMomWhatsApp(formData)} className="whatsapp-btn action-btn">
                             💬 שלחי לעצמך
                         </button>
-                        <button className="btn-primary custom-save action-btn" onClick={handleSave}>שמור שינויים</button>
+                        <button className="btn-primary custom-save action-btn" onClick={handleSave} disabled={isSaving}>
+                            {isSaving ? "שומר..." : "שמור שינויים"}
+                        </button>
                     </div>
                 </div>
 
-                <div className="drawer-content">
+                <div className="drawer-content" ref={drawerContentRef}>
                     {/* Header Area */}
                     <div className="profile-header-info">
                         <div className={`avatar-large gradient-${formData.avatarIndex || 1}`}>

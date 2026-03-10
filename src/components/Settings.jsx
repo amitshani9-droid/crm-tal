@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { exportClientsToCSV } from '../utils/exportUtils';
 
 /**
  * Settings Component
@@ -7,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 function Settings({ clients }) {
     const [settings, setSettings] = useState({
         businessName: localStorage.getItem('crm_business_name') || 'טל שני - הפקת אירועים',
-        password: localStorage.getItem('crm_master_password') || 'tal0203',
+        password: localStorage.getItem('crm_master_password') || import.meta.env.VITE_ADMIN_PASSWORD,
         thankYouMessage: localStorage.getItem('crm_thank_you_msg') || 'הפרטים התקבלו בהצלחה ונחזור אליך בהקדם.',
         maintenanceMode: localStorage.getItem('crm_maintenance_mode') === 'true'
     });
@@ -31,30 +32,7 @@ function Settings({ clients }) {
         window.dispatchEvent(new Event('storage'));
     };
 
-    const handleExportCSV = () => {
-        if (!clients || clients.length === 0) {
-            alert("אין נתונים לייצוא.");
-            return;
-        }
-
-        const headers = "ID,סטטוס,איש קשר,טלפון,מייל,תפקיד,חברה,היסטוריית שיחות,שיחה הבאה\n";
-        const rows = clients.map(c => {
-            const history = (c.history || "").replace(/"/g, '""');
-            const contact = (c.contact || "").replace(/"/g, '""');
-            const company = (c.company || "").replace(/"/g, '""');
-            const role = (c.role || "").replace(/"/g, '""');
-            const phone = (c.phone || "").startsWith("'") ? c.phone.substring(1) : (c.phone || "");
-
-            return `"${c.id}","${c.status || 'חדש'}","${contact}","${phone}","${c.email || ''}","${role}","${company}","${history}","${c.nextCall || ''}"`;
-        }).join("\n");
-
-        const csvContent = "\ufeff" + headers + rows;
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `CRM_Backup_${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
-    };
+    const handleExportCSV = () => exportClientsToCSV(clients, 'CRM_Backup');
 
     return (
         <div className="settings-view">
@@ -84,7 +62,7 @@ function Settings({ clients }) {
                     <div className="info-group">
                         <label>סיסמת כניסה למערכת</label>
                         <input 
-                            type="text" 
+                            type="password" 
                             className="glass-input" 
                             value={settings.password}
                             onChange={(e) => handleChange('password', e.target.value)}

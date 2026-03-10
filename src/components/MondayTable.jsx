@@ -1,22 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getInitials } from '../utils/formatters';
 
 /**
  * MondayTable Component
  * Displays a list of clients in a Monday.com style table with isolated row actions.
  */
-function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient }) {
+function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient, itemsPerPage = 8 }) {
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // Reset to page 1 whenever the clients list changes (e.g. after search)
+    useEffect(() => { setCurrentPage(1); }, [clients]);
+
     if (!clients || clients.length === 0) {
         return <div className="placeholder-view">אין לקוחות להצגה בתצוגה זו.</div>;
     }
 
-    const getInitials = (name) => {
-        if (!name) return "?";
-        const parts = name.trim().split(" ");
-        if (parts.length > 1) {
-            return (parts[0][0] + parts[1][0]).toUpperCase();
-        }
-        return parts[0][0].toUpperCase();
-    };
+    const totalPages = Math.ceil(clients.length / itemsPerPage);
+    const paginated = clients.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
 
     const formatNextCall = (dateString) => {
         if (!dateString) return "-";
@@ -39,7 +40,7 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient })
                     </tr>
                 </thead>
                 <tbody>
-                    {clients.map(client => (
+                    {paginated.map(client => (
                         <tr 
                             key={`client-${client.id}`} 
                             onClick={() => onClientClick(client)} 
@@ -119,6 +120,27 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient })
                     ))}
                 </tbody>
             </table>
+            {totalPages > 1 && (
+                <div className="pagination-controls">
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                    >
+                        ‹ הקודם
+                    </button>
+                    <span className="pagination-info">
+                        עמוד {currentPage} מתוך {totalPages}
+                    </span>
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                    >
+                        הבא ›
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

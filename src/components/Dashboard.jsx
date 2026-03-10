@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { exportClientsToCSV } from '../utils/exportUtils';
 import ClientProfile from './ClientProfile';
 import MondayTable from './MondayTable';
 import StatisticsBento from './StatisticsBento';
@@ -15,6 +16,7 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
     const [isSaving, setIsSaving] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [refreshSuccess, setRefreshSuccess] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     // 1. Analytics & Stats Calculations
     const totalClients = clients.length;
@@ -123,14 +125,22 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
         console.log("Deleting ID:", clientId);
         try {
-            let response = await fetch(`${SHEETDB_URL}/id/${String(clientId)}`, { method: 'DELETE' });
-            const result = await response.json();
+            // First attempt: delete by unique ID
+            const firstResponse = await fetch(`${SHEETDB_URL}/id/${String(clientId)}`, { method: 'DELETE' });
+            const result = await firstResponse.json();
 
-            if (result.deleted === 0 && clientToDelete.contact) {
-                response = await fetch(`${SHEETDB_URL}/contact/${encodeURIComponent(clientToDelete.contact)}`, { method: 'DELETE' });
+            if (result.deleted > 0) {
+                // Primary delete succeeded — remove from local state
+                setClients(prev => prev.filter(client => String(client.id) !== String(clientId)));
+                return;
             }
 
-            if (!response.ok) throw new Error("Delete failed");
+            // Fallback: delete by contact name when ID column was empty
+            if (clientToDelete.contact) {
+                await fetch(`${SHEETDB_URL}/contact/${encodeURIComponent(clientToDelete.contact)}`, { method: 'DELETE' });
+            }
+
+            // Remove from local state regardless — the row was likely already absent or matched by name
             setClients(prev => prev.filter(client => String(client.id) !== String(clientId)));
         } catch (error) {
             console.error("Delete failed", error);
@@ -149,38 +159,22 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
         handleOpenProfile(newClient);
     };
 
-    const handleExportCSV = () => {
-        if (!clients || clients.length === 0) {
-            alert("אין נתונים לייצוא.");
-            return;
-        }
+    const handleExportCSV = () => exportClientsToCSV(clients, 'CRM_Export');
 
-        const headers = "ID,סטטוס,איש קשר,טלפון,מייל,תפקיד,חברה,היסטוריית שיחות,שיחה הבאה\n";
-        const rows = clients.map(c => {
-            const history = (c.history || "").replace(/"/g, '""');
-            const contact = (c.contact || "").replace(/"/g, '""');
-            const company = (c.company || "").replace(/"/g, '""');
-            const role = (c.role || "").replace(/"/g, '""');
-            const phone = (c.phone || "").startsWith("'") ? c.phone.substring(1) : (c.phone || "");
+    const filteredClients = clients.filter(c => {
+        const query = searchTerm.toLowerCase();
+        return (c.contact || "").toLowerCase().includes(query) ||
+               (c.company || "").toLowerCase().includes(query) ||
+               (c.phone || "").toLowerCase().includes(query);
+    });
 
-            return `"${c.id}","${c.status || 'חדש'}","${contact}","${phone}","${c.email || ''}","${role}","${company}","${history}","${c.nextCall || ''}"`;
-        }).join("\n");
-
-        const csvContent = "\ufeff" + headers + rows;
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `CRM_Export_${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
-    };
-
-    // Filter Groups
-    const todayClients = clients.filter(c => c.nextCall && c.nextCall.split('T')[0] === todayStr);
+    // Filter Groups based on FILTERED clients
+    const todayClients = filteredClients.filter(c => c.nextCall && c.nextCall.split('T')[0] === todayStr);
     const todayIds = new Set(todayClients.map(c => String(c.id)));
 
-    const newClients = clients.filter(c => !todayIds.has(String(c.id)) && (String(c.status) === 'חדש' || !c.status));
-    const inProgressClients = clients.filter(c => !todayIds.has(String(c.id)) && String(c.status) === 'בטיפול');
-    const closedClients = clients.filter(c => !todayIds.has(String(c.id)) && String(c.status) === 'סגור');
+    const newClients = filteredClients.filter(c => !todayIds.has(String(c.id)) && (String(c.status) === 'חדש' || !c.status));
+    const inProgressClients = filteredClients.filter(c => !todayIds.has(String(c.id)) && String(c.status) === 'בטיפול');
+    const closedClients = filteredClients.filter(c => !todayIds.has(String(c.id)) && String(c.status) === 'סגור');
 
     return (
         <div className="dashboard">
@@ -198,6 +192,17 @@ function Dashboard({ clients, setClients, SHEETDB_URL, fetchClients }) {
 
             {/* 3. Action Toolbar */}
             <div className="dashboard-actions-row">
+                <div className="search-bar-container">
+                    <span className="search-icon">🔍</span>
+                    <input 
+                        type="text" 
+                        placeholder="חיפוש לקוח לפי שם, חברה או טלפון..." 
+                        className="search-input-glass"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                
                 <div className="dashboard-actions">
                     <button className="btn-primary" onClick={handleAddClient}>
                         <span className="btn-icon">✚</span> הוספת לקוח חדש

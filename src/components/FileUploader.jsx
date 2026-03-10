@@ -1,7 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function FileUploader({ documents, onChange }) {
     const [isDragging, setIsDragging] = useState(false);
+    // Track all blob URLs we create so we can revoke them on removal or unmount
+    const createdUrlsRef = useRef([]);
+
+    // Revoke all tracked object URLs when the component unmounts
+    useEffect(() => {
+        return () => {
+            createdUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+        };
+    }, []);
 
     const handleDragOver = (e) => {
         e.preventDefault();
@@ -18,11 +27,15 @@ function FileUploader({ documents, onChange }) {
         setIsDragging(false);
 
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            const newDocs = Array.from(e.dataTransfer.files).map(file => ({
-                name: file.name,
-                url: URL.createObjectURL(file), // create temporary preview URL
-                type: file.name.endsWith('.pdf') ? 'pdf' : 'doc'
-            }));
+            const newDocs = Array.from(e.dataTransfer.files).map(file => {
+                const url = URL.createObjectURL(file);
+                createdUrlsRef.current.push(url); // track for cleanup
+                return {
+                    name: file.name,
+                    url,
+                    type: file.name.endsWith('.pdf') ? 'pdf' : 'doc'
+                };
+            });
 
             onChange([...(documents || []), ...newDocs]);
         }
@@ -30,7 +43,12 @@ function FileUploader({ documents, onChange }) {
 
     const removeDoc = (index) => {
         const newDocs = [...documents];
-        newDocs.splice(index, 1);
+        const removed = newDocs.splice(index, 1)[0];
+        // Revoke the blob URL immediately when removing a file
+        if (removed?.url && removed.url.startsWith('blob:')) {
+            URL.revokeObjectURL(removed.url);
+            createdUrlsRef.current = createdUrlsRef.current.filter(u => u !== removed.url);
+        }
         onChange(newDocs);
     };
 

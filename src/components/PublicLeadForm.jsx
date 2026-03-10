@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './PublicLeadForm.css';
 
-const SHEETDB_URL = "https://sheetdb.io/api/v1/y933qp6w0yxj9";
+const SHEETDB_URL = import.meta.env.VITE_SHEETDB_URL;
 
 export default function PublicLeadForm() {
     // Dynamic Settings: Allow override via Dashboard, else use defaults

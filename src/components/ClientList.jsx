@@ -7,19 +7,9 @@ function ClientList({ clients, onClientClick }) {
         return <EmptyState />;
     }
 
-    const filteredClients = clients.filter(client => {
-        const hasPhone = client.phone && client.phone.trim() !== "";
-        const hasCompany = client.company && client.company.trim() !== "";
-        return hasPhone || hasCompany;
-    });
-
-    if (filteredClients.length === 0) {
-        return <EmptyState />;
-    }
-
     return (
         <div className="client-grid">
-            {filteredClients.map(client => (
+            {clients.map(client => (
                 <ClientCard
                     key={client.id}
                     client={client}

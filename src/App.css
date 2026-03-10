@@ -1530,3 +1530,113 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ----------------------------------
+   Pagination Controls
+----------------------------------- */
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--clr-glass-border);
+}
+
+.pagination-btn {
+  background: var(--clr-glass);
+  border: 1px solid var(--clr-glass-border);
+  color: var(--clr-text-primary);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--clr-primary);
+  color: white;
+  border-color: var(--clr-primary);
+  transform: translateY(-1px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: var(--clr-text-secondary);
+  font-weight: 500;
+}
+
+/* ----------------------------------
+   Search Bar (Dashboard)
+----------------------------------- */
+.dashboard-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.search-bar-container {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  opacity: 0.4;
+}
+
+.search-input-glass {
+  width: 100%;
+  padding: 10px 40px 10px 15px;
+  background: var(--clr-glass);
+  border: 1px solid var(--clr-glass-border);
+  border-radius: 24px;
+  font-size: 0.95rem;
+  color: var(--clr-text-primary);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.search-input-glass:focus {
+  background: white;
+  border-color: var(--clr-primary);
+  box-shadow: 0 4px 12px var(--clr-primary-glow);
+}
+
+/* ----------------------------------
+   Loading Animations
+----------------------------------- */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinning {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+.action-btn:disabled {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+/* Ensure pagination stays inside table cards */
+.monday-table-wrapper {
+  padding-top: var(--space-sm);
+}

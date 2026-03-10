@@ -32,7 +32,7 @@ function LeadForm({ SHEETDB_URL, onBack }) {
         };
 
         try {
-            await fetch(SHEETDB_URL, {
+            const response = await fetch(SHEETDB_URL, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -40,6 +40,8 @@ function LeadForm({ SHEETDB_URL, onBack }) {
                 },
                 body: JSON.stringify({ data: [newLead] })
             });
+
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
             setIsSuccess(true);
             setFormData({ contact: "", phone: "", company: "" });
