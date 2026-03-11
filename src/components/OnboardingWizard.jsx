@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
+import { uploadFileToStorage } from '../utils/storageUtils';
 import { 
     Building2, 
     Image as ImageIcon, 
@@ -12,9 +13,10 @@ import {
     ChevronLeft, 
     ChevronRight,
     X,
-    Loader2
+    Loader2,
+    AlertCircle
 } from 'lucide-react';
-import CSVImportModal from './CSVImportModal';
+import CSVImportModal from './dashboard/CSVImportModal';
 import './OnboardingWizard.css';
 
 const OnboardingWizard = ({ profile, session, onComplete, onSkip }) => {
@@ -29,6 +31,31 @@ const OnboardingWizard = ({ profile, session, onComplete, onSkip }) => {
         logoUrl: profile?.settings?.logo_url || '',
         businessDescription: profile?.settings?.business_description || '',
     });
+    const [isCelebration, setIsCelebration] = useState(false);
+    const [validationError, setValidationError] = useState('');
+
+    const validateStep = () => {
+        setValidationError('');
+        if (step === 1) {
+            if (!formData.businessName.trim()) {
+                setValidationError('נא להזין את שם העסק');
+                return false;
+            }
+        }
+        if (step === 2) {
+            if (!formData.businessDescription.trim() || formData.businessDescription.length < 10) {
+                setValidationError('נא להזין תיאור עסקי מפורט (לפחות 10 תווים)');
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const handleNext = () => {
+        if (validateStep()) {
+            setStep(step + 1);
+        }
+    };
 
     const handleLogoUpload = async (e) => {
         const file = e.target.files[0];
@@ -36,20 +63,7 @@ const OnboardingWizard = ({ profile, session, onComplete, onSkip }) => {
 
         setLogoLoading(true);
         try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${session.user.id}-${Math.random()}.${fileExt}`;
-            const filePath = `${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('logos')
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('logos')
-                .getPublicUrl(filePath);
-
+            const publicUrl = await uploadFileToStorage(file, 'logos', session.user.id);
             setFormData(prev => ({ ...prev, logoUrl: publicUrl }));
         } catch (err) {
             console.error(err);
@@ -60,6 +74,7 @@ const OnboardingWizard = ({ profile, session, onComplete, onSkip }) => {
     };
 
     const handleSave = async () => {
+        if (!validateStep()) return;
         setLoading(true);
         try {
             const updatedSettings = {
@@ -68,7 +83,21 @@ const OnboardingWizard = ({ profile, session, onComplete, onSkip }) => {
                 business_description: formData.businessDescription,
             };
 
-            const { error } = await supabase
+            // 1. Create Default Pipeline Stages
+            const defaultStages = [
+                { name: 'חדש', position: 1, color: '#3b82f6' },
+                { name: 'בטיפול', position: 2, color: '#f59e0b' },
+                { name: 'סגור', position: 3, color: '#10b981' }
+            ].map(s => ({ ...s, user_id: session.user.id }));
+
+            const { error: stagesError } = await supabase
+                .from('pipeline_stages')
+                .upsert(defaultStages, { onConflict: 'user_id, name' }); // basic protection
+
+            if (stagesError) console.error("Error creating default stages:", stagesError);
+
+            // 2. Update Profiles table
+            const { error: profileError } = await supabase
                 .from('profiles')
                 .update({
                     business_name: formData.businessName,
@@ -76,9 +105,20 @@ const OnboardingWizard = ({ profile, session, onComplete, onSkip }) => {
                 })
                 .eq('id', session.user.id);
 
-            if (error) throw error;
+            if (profileError) throw profileError;
+
+            // 3. Update Auth User Metadata for consistency
+            await supabase.auth.updateUser({
+                data: {
+                    business_name: formData.businessName,
+                    slug: profile?.slug
+                }
+            });
             
-            onComplete(); 
+            setIsCelebration(true);
+            setTimeout(() => {
+                onComplete(); 
+            }, 3000);
         } catch (err) {
             console.error(err);
             alert("שגיאה בשמירת הנתונים");
@@ -123,35 +163,58 @@ const OnboardingWizard = ({ profile, session, onComplete, onSkip }) => {
                 </button>
 
                 {/* Header / Progress */}
-                <div className="onboarding-header">
-                    <div className="progress-container">
-                        {steps.map((s, idx) => (
-                            <React.Fragment key={s.id}>
-                                <div className={`step-item ${step >= s.id ? 'active' : ''} ${step > s.id ? 'completed' : ''}`}>
-                                    <div className="step-icon">
-                                        {step > s.id ? <Check size={16} /> : s.icon}
+                {!isCelebration && (
+                    <div className="onboarding-header">
+                        <div className="progress-container">
+                            {steps.map((s, idx) => (
+                                <React.Fragment key={s.id}>
+                                    <div className={`step-item ${step >= s.id ? 'active' : ''} ${step > s.id ? 'completed' : ''}`}>
+                                        <div className="step-icon">
+                                            {step > s.id ? <Check size={16} /> : s.icon}
+                                        </div>
+                                        <span className="step-label">{s.title}</span>
                                     </div>
-                                    <span className="step-label">{s.title}</span>
-                                </div>
-                                {idx < steps.length - 1 && (
-                                    <div className={`step-connector ${step > s.id ? 'active' : ''}`} />
-                                )}
-                            </React.Fragment>
-                        ))}
+                                    {idx < steps.length - 1 && (
+                                        <div className={`step-connector ${step > s.id ? 'active' : ''}`} />
+                                    )}
+                                </React.Fragment>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="onboarding-body">
                     <AnimatePresence mode="wait">
-                        {step === 1 && (
+                        {isCelebration ? (
                             <motion.div 
-                                key="step1"
-                                variants={stepVariants}
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
-                                className="wizard-step-content"
+                                key="celebration"
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="celebration-content"
                             >
+                                <div className="celebration-icon">🚀</div>
+                                <h2>איזה כיף! המערכת מוכנה ✨</h2>
+                                <p>הגדרנו את הכל. עוברים עכשיו לדשבורד שלך...</p>
+                                <div className="loading-bar-success">
+                                    <motion.div 
+                                        className="loading-fill"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: "100%" }}
+                                        transition={{ duration: 2.5 }}
+                                    />
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <>
+                                {step === 1 && (
+                                    <motion.div 
+                                        key="step1"
+                                        variants={stepVariants}
+                                        initial="initial"
+                                        animate="animate"
+                                        exit="exit"
+                                        className="wizard-step-content"
+                                    >
                                 <div className="step-title-group">
                                     <h2>בואו נכיר את העסק ✨</h2>
                                     <p>הצעד הראשון בדרך למערכת מותאמת אישית עבורכם.</p>
@@ -272,10 +335,29 @@ const OnboardingWizard = ({ profile, session, onComplete, onSkip }) => {
                                 )}
                             </motion.div>
                         )}
+                            </>
+                        )}
                     </AnimatePresence>
                 </div>
 
-                <div className="onboarding-footer">
+                {!isCelebration && (
+                    <>
+                        <div className="onboarding-validation-error-area">
+                            <AnimatePresence>
+                                {validationError && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        className="wizard-validation-msg"
+                                    >
+                                        <AlertCircle size={16} />
+                                        <span>{validationError}</span>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                        <div className="onboarding-footer">
                     {step > 1 && (
                         <button 
                             className="btn-wizard-ghost" 
@@ -299,7 +381,7 @@ const OnboardingWizard = ({ profile, session, onComplete, onSkip }) => {
                     {step < 3 ? (
                         <button 
                             className="btn-wizard-primary"
-                            onClick={() => setStep(step + 1)}
+                            onClick={handleNext}
                         >
                             <span>המשך</span>
                             <ChevronLeft size={18} />
@@ -314,8 +396,10 @@ const OnboardingWizard = ({ profile, session, onComplete, onSkip }) => {
                             <span>סיום והפעלה</span>
                         </button>
                     )}
-                </div>
-            </motion.div>
+                    </div>
+                </>
+            )}
+        </motion.div>
 
             <CSVImportModal 
                 isOpen={showCSVModal}

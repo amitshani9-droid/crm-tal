@@ -237,12 +237,106 @@ button {
   z-index: 1000;
 }
 
-.spin, .animate-spin {
-  animation: spin 1s linear infinite;
-  display: inline-block;
+/* Dashboard Layout */
+.dashboard-container {
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.dashboard-workspace {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  align-items: flex-start;
 }
+
+.kanban-wrapper {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 24px;
+}
+
+.kanban-column {
+  background: rgba(0,0,0,0.02);
+  min-height: 70vh;
+}
+
+.kanban-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.kanban-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-color: var(--clr-primary);
+}
+
+.sidebar-widgets {
+  position: sticky;
+  top: 24px;
+}
+
+
+.kanban-column.drag-over {
+  background: rgba(202, 138, 4, 0.05) !important;
+  border: 2px dashed var(--clr-primary) !important;
+}
+
+.kanban-card:active {
+  cursor: grabbing;
+  transform: scale(1.02);
+  z-index: 10;
+}
+
+/* Widgets */
+.glass-card.widget {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-glass-border);
+}
+
+.task-item-mini {
+  transition: transform 0.2s;
+}
+
+.task-item-mini:hover {
+  transform: translateX(-4px);
+  background: rgba(16, 185, 129, 0.05) !important;
+}
+
+.icon-btn-mini {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.03);
+  color: var(--clr-text-secondary);
+  transition: all 0.2s;
+}
+
+.icon-btn-mini:hover {
+  background: var(--clr-primary);
+  color: white;
+}
+
+/* Search Dropdown */
+.search-dropdown {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--clr-glass-border);
+}
+
+.search-result-item:hover {
+  background: rgba(202, 138, 4, 0.05);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}

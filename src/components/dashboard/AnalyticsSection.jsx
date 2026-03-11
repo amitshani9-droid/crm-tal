@@ -1,9 +1,5 @@
 import React from 'react';
 
-/**
- * AnalyticsSection Component
- * Visualizes CRM data using a high-contrast custom Pie Chart and summary tiles.
- */
 function AnalyticsSection({ clients }) {
     if (!clients || clients.length === 0) return null;
 
@@ -14,31 +10,26 @@ function AnalyticsSection({ clients }) {
         closed: clients.filter(c => String(c.status) === 'סגור').length
     };
 
-    const newPerc = ((stats.new / total) * 100).toFixed(0);
-    const activePerc = ((stats.active / total) * 100).toFixed(0);
-    const successRate = ((stats.closed / total) * 100).toFixed(0);
+    const newPerc = total > 0 ? ((stats.new / total) * 100).toFixed(0) : 0;
+    const activePerc = total > 0 ? ((stats.active / total) * 100).toFixed(0) : 0;
+    const successRate = total > 0 ? ((stats.closed / total) * 100).toFixed(0) : 0;
 
     const radius = 70;
     const circumference = 2 * Math.PI * radius;
     
-    // Vibrant solid colors for maximum impact
     const colors = {
-        purple: '#6c5ce7', // Deep Purple
-        orange: '#fdcb6e', // Vibrant Orange
-        emerald: '#00b894' // Emerald Green
+        purple: '#6c5ce7',
+        orange: '#fdcb6e',
+        emerald: '#00b894'
     };
 
     return (
         <div className="analytics-container glass-card high-contrast">
             <div className="analytics-content">
-                {/* Enhanced Pie Chart */}
                 <div className="analytics-chart-box">
                     <div className="pie-chart-wrapper" style={{ position: 'relative' }}>
                         <svg width="220" height="220" viewBox="0 0 200 200">
-                            {/* Visual background track */}
                             <circle cx="100" cy="100" r={radius} fill="transparent" stroke="rgba(0,0,0,0.03)" strokeWidth="24" />
-                            
-                            {/* New leads segment */}
                             <circle 
                                 cx="100" cy="100" r={radius} 
                                 fill="transparent" 
@@ -48,8 +39,6 @@ function AnalyticsSection({ clients }) {
                                 transform="rotate(-90 100 100)"
                                 strokeLinecap="round"
                             />
-                            
-                            {/* In Progress segment */}
                             <circle 
                                 cx="100" cy="100" r={radius} 
                                 fill="transparent" 
@@ -59,8 +48,6 @@ function AnalyticsSection({ clients }) {
                                 transform={`rotate(${-90 + (stats.new / total) * 360} 100 100)`}
                                 strokeLinecap="round"
                             />
-
-                            {/* Closed segment */}
                             <circle 
                                 cx="100" cy="100" r={radius} 
                                 fill="transparent" 
@@ -70,8 +57,6 @@ function AnalyticsSection({ clients }) {
                                 transform={`rotate(${-90 + ((stats.new + stats.active) / total) * 360} 100 100)`}
                                 strokeLinecap="round"
                             />
-                            
-                            {/* High-Contrast Center Stats */}
                             <text x="100" y="98" textAnchor="middle" fill="#2c3e50" fontSize="28" fontWeight="800">{total}</text>
                             <text x="100" y="122" textAnchor="middle" fill="#546e7a" fontSize="13" fontWeight="700">לקוחות</text>
                         </svg>
@@ -84,7 +69,6 @@ function AnalyticsSection({ clients }) {
                     </div>
                 </div>
 
-                {/* Summarized Performance Tiles */}
                 <div className="analytics-stats-grid">
                     <div className="mini-stat-card high-contrast">
                         <span className="mini-label contrast">שיעור לידים חדשים</span>
@@ -97,7 +81,7 @@ function AnalyticsSection({ clients }) {
                         <div className="stat-progress dark-bg"><div className="progress-bar orange-solid" style={{ width: `${activePerc}%` }}></div></div>
                     </div>
                     <div className="mini-stat-card highlight high-contrast">
-                        <span className="mini-label contrast" style={{ color: '#27ae60' }}>שיעור הצלחה (Success Rate)</span>
+                        <span className="mini-label contrast" style={{ color: '#27ae60' }}>שיעור הצלחה</span>
                         <span className="mini-value-large emerald">{successRate}%</span>
                         <div className="stat-progress dark-bg"><div className="progress-bar emerald-solid" style={{ width: `${successRate}%` }}></div></div>
                     </div>

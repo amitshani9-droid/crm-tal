@@ -411,3 +411,64 @@
     
     .step-label { display: none; }
 }
+
+/* Celebration State */
+.celebration-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 20px;
+    padding: 60px 20px;
+}
+
+.celebration-icon {
+    font-size: 4rem;
+    animation: rocketLaunch 1s ease-in-out infinite alternate;
+}
+
+@keyframes rocketLaunch {
+    from { transform: translateY(0); }
+    to { transform: translateY(-10px); }
+}
+
+.celebration-content h2 {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.loading-bar-success {
+    width: 100%;
+    max-width: 300px;
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.loading-fill {
+    height: 100%;
+    background: #10b981;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+}
+
+/* Validation Area */
+.onboarding-validation-error-area {
+    padding: 0 40px;
+    min-height: 24px;
+}
+
+.wizard-validation-msg {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ef4444;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 8px 16px;
+    border-radius: 10px;
+}

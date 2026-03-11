@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { uploadFileToStorage } from '../utils/storageUtils';
 import './SetupWizard.css';
 
 const SetupWizard = ({ session, onComplete }) => {
@@ -27,14 +28,7 @@ const SetupWizard = ({ session, onComplete }) => {
 
     setLogoLoading(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${session.user.id}-${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage.from('logos').upload(filePath, file);
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage.from('logos').getPublicUrl(filePath);
+      const publicUrl = await uploadFileToStorage(file, 'logos', session.user.id);
       setFormData(prev => ({ ...prev, logoUrl: publicUrl }));
     } catch (err) {
       console.error("Logo upload failed:", err);

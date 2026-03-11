@@ -1,0 +1,35 @@
+src\components\Settings.jsx <-> src\components\SetupWizard.jsx
+;
+
+src\components\OnboardingWizard.jsx <-> src\components\Settings.jsx
+);
+
+src\components\CSVImportModal.jsx <-> src\components\CSVImportModal.jsx
+: e.target.value})}
+
+src\components\CSVImportModal.jsx <-> src\components\CSVImportModal.jsx
+: e.target.value})}
+
+src\components\CSVImportModal.jsx <-> src\components\CSVImportModal.jsx
+const parseCSVLine = (line) => {
+
+src\components\CSVImportModal.jsx <-> src\components\CSVImportModal.jsx
+*</label>
+
+src\components\CSVImportModal.jsx <-> src\components\CSVImportModal.jsx
+</label>
+
+src\components\CSVImportModal.jsx <-> src\components\CSVImportModal.jsx
+</label>
+
+src\components\AdminDashboard.jsx <-> src\components\AdminDashboard.jsx
+ }}>
+
+src\components\AdminDashboard.jsx <-> src\components\AdminDashboard.jsx
+ }}>
+
+src\components\AdminDashboard.jsx <-> src\components\AdminDashboard.jsx
+ }}>שולם הקמה (₪1899)</th>
+
+src\components\AdminDashboard.jsx <-> src\components\AdminDashboard.jsx
+};

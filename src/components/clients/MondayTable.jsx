@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { getInitials } from '../utils/formatters';
+import { getInitials } from '../../utils/formatters';
 
-/**
- * MondayTable Component
- * Displays a list of clients in a Monday.com style table with isolated row actions.
- */
-function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient, itemsPerPage = 8 }) {
+function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient, stages = [], itemsPerPage = 8 }) {
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Reset to page 1 whenever the clients list changes (e.g. after search)
-    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     useEffect(() => { setCurrentPage(1); }, [clients]);
 
     if (!clients || clients.length === 0) {
@@ -19,11 +13,20 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient, i
     const totalPages = Math.ceil(clients.length / itemsPerPage);
     const paginated = clients.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-
     const formatNextCall = (dateString) => {
         if (!dateString) return "-";
         const date = new Date(dateString);
         return date.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit' });
+    };
+
+    const getStageColor = (stageId, status) => {
+        if (stageId && stages.length > 0) {
+            const stage = stages.find(s => s.id === stageId);
+            return stage ? stage.color : '#e2e8f0';
+        }
+        if (status === 'סגור') return '#10b981';
+        if (status === 'בטיפול') return '#f59e0b';
+        return '#3b82f6';
     };
 
     return (
@@ -72,15 +75,14 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient, i
                                             className="whatsapp-pill-btn"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                // Improved Phone Cleaning logic (Avoid double 972)
                                                 let rawNum = client.phone.replace(/\D/g, '');
                                                 if (rawNum.startsWith('0')) {
                                                     rawNum = '972' + rawNum.substring(1);
                                                 } else if (rawNum.startsWith('5')) {
-                                                    rawNum = '972' + rawNum; // Standard IL mobile with no 0
+                                                    rawNum = '972' + rawNum; 
                                                 }
                                                 const cleanNumber = rawNum;
-                                                const message = `היי ${client.contact || 'שם הלקוח'}, כאן טל מ-Tali's Events, אשמח לתת לך פרטים על יום הגיבוש שלנו!`;
+                                                const message = `היי ${client.contact || 'שם הלקוח'}, כאן טל מ-AS-CRM, אשמח לתת לך פרטים!`;
                                                 const url = `https://api.whatsapp.com/send?phone=${cleanNumber}&text=${encodeURIComponent(message)}`;
                                                 window.open(url, '_blank');
                                             }}
@@ -96,16 +98,31 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient, i
                             <td>{formatNextCall(client.nextCall)}</td>
                             <td className="status-cell" onClick={(e) => e.stopPropagation()}>
                                 <select 
-                                    className={`status-select-mini ${
-                                        String(client.status) === 'סגור' ? 'closed' : 
-                                        String(client.status) === 'בטיפול' ? 'in-progress' : 'new'
-                                    }`}
-                                    value={client.status || 'חדש'}
+                                    className="status-select-mini"
+                                    style={{ 
+                                        backgroundColor: getStageColor(client.stage_id, client.status),
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        padding: '4px 8px',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer'
+                                    }}
+                                    value={client.stage_id || client.status || 'חדש'}
                                     onChange={(e) => onStatusChange(client.id, e.target.value)}
                                 >
-                                    <option value="חדש">חדש</option>
-                                    <option value="בטיפול">בטיפול</option>
-                                    <option value="סגור">סגור</option>
+                                    {stages.length > 0 ? (
+                                        stages.map(s => (
+                                            <option key={s.id} value={s.id}>{s.name}</option>
+                                        ))
+                                    ) : (
+                                        <>
+                                            <option value="חדש">חדש</option>
+                                            <option value="בטיפול">בטיפול</option>
+                                            <option value="סגור">סגור</option>
+                                        </>
+                                    )}
                                 </select>
                             </td>
                             <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
@@ -145,6 +162,5 @@ function MondayTable({ clients, onClientClick, onStatusChange, onDeleteClient, i
         </div>
     );
 }
-
 
 export default MondayTable;

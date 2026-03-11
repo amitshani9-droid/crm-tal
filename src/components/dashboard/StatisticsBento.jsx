@@ -1,14 +1,8 @@
 import React from 'react';
 
-/**
- * StatisticsBento Component
- * A high-end Bento Grid statistics dashboard using CSS Grid and Glassmorphism.
- * Re-designed for maximum contrast and high-end aesthetics.
- */
 function StatisticsBento({ totalClients, newLeads, activePipeline, closedDeals, todoToday }) {
   return (
     <div className="bento-grid-container">
-      {/* Primary Visual Anchor: Active Pipeline */}
       <div className="bento-card bento-main glass-bento-card">
         <div className="bento-card-content">
           <div className="bento-label-row">
@@ -20,7 +14,6 @@ function StatisticsBento({ totalClients, newLeads, activePipeline, closedDeals, 
         </div>
       </div>
 
-      {/* Total Clients Card */}
       <div className="bento-card bento-secondary glass-bento-card">
         <div className="bento-card-content">
           <div className="bento-label-row">
@@ -31,7 +24,6 @@ function StatisticsBento({ totalClients, newLeads, activePipeline, closedDeals, 
         </div>
       </div>
 
-      {/* To-Do Today Card - Critical Alert Style */}
       <div className="bento-card bento-accent glass-bento-card">
         <div className="bento-card-content">
           <div className="bento-label-row">
@@ -42,7 +34,6 @@ function StatisticsBento({ totalClients, newLeads, activePipeline, closedDeals, 
         </div>
       </div>
 
-      {/* Closed Deals Card - Success Style */}
       <div className="bento-card bento-highlight glass-bento-card">
         <div className="bento-card-content">
           <div className="bento-label-row">
@@ -53,7 +44,6 @@ function StatisticsBento({ totalClients, newLeads, activePipeline, closedDeals, 
         </div>
       </div>
 
-      {/* New Leads This Week */}
       <div className="bento-card bento-info glass-bento-card">
         <div className="bento-card-content">
           <div className="bento-label-row">

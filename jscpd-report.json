@@ -1,0 +1,1149 @@
+{
+  "statistics": {
+    "detectionDate": "2026-03-11T12:41:28.158Z",
+    "formats": {
+      "javascript": {
+        "sources": {
+          "src/utils/formatters.js": {
+            "lines": 18,
+            "tokens": 110,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/utils/exportUtils.js": {
+            "lines": 35,
+            "tokens": 447,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/lib/supabase.js": {
+            "lines": 33,
+            "tokens": 288,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/data/mockClients.js": {
+            "lines": 51,
+            "tokens": 346,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/contexts/AuthContext.jsx": {
+            "lines": 0,
+            "tokens": 13,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/StatisticsBento.jsx": {
+            "lines": 22,
+            "tokens": 248,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/Sidebar.jsx": {
+            "lines": 34,
+            "tokens": 453,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/SetupWizard.jsx": {
+            "lines": 71,
+            "tokens": 956,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/Settings.jsx": {
+            "lines": 240,
+            "tokens": 2925,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/PublicLeadForm.jsx": {
+            "lines": 53,
+            "tokens": 759,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/OnboardingWizard.jsx": {
+            "lines": 234,
+            "tokens": 2045,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/NextCallReminder.jsx": {
+            "lines": 1,
+            "tokens": 25,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/MondayTable.jsx": {
+            "lines": 99,
+            "tokens": 1031,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/MainLayout.jsx": {
+            "lines": 72,
+            "tokens": 1339,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/LoginPage.jsx": {
+            "lines": 66,
+            "tokens": 866,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/LandingPage.jsx": {
+            "lines": 95,
+            "tokens": 1492,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/FloatingWhatsApp.jsx": {
+            "lines": 0,
+            "tokens": 3,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/FileUploader.jsx": {
+            "lines": 128,
+            "tokens": 1501,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/Dashboard.jsx": {
+            "lines": 115,
+            "tokens": 1045,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/CSVImportModal.jsx": {
+            "lines": 99,
+            "tokens": 1626,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 40,
+            "duplicatedTokens": 620,
+            "percentage": 40.4,
+            "percentageTokens": 38.13,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/ConversationLog.jsx": {
+            "lines": 72,
+            "tokens": 893,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/ClientProfile.jsx": {
+            "lines": 106,
+            "tokens": 1076,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/AnalyticsSection.jsx": {
+            "lines": 64,
+            "tokens": 879,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/AdminDashboard.jsx": {
+            "lines": 210,
+            "tokens": 2959,
+            "sources": 1,
+            "clones": 6,
+            "duplicatedLines": 42,
+            "duplicatedTokens": 940,
+            "percentage": 20,
+            "percentageTokens": 31.77,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/App.jsx": {
+            "lines": 18,
+            "tokens": 361,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 1936,
+          "tokens": 23686,
+          "sources": 25,
+          "clones": 5,
+          "duplicatedLines": 41,
+          "duplicatedTokens": 780,
+          "percentage": 2.12,
+          "percentageTokens": 3.29,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "jsx": {
+        "sources": {
+          "src/contexts/AuthContext.jsx": {
+            "lines": 71,
+            "tokens": 749,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/StatisticsBento.jsx": {
+            "lines": 69,
+            "tokens": 646,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/Sidebar.jsx": {
+            "lines": 69,
+            "tokens": 873,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/SetupWizard.jsx": {
+            "lines": 158,
+            "tokens": 1823,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 12,
+            "duplicatedTokens": 140,
+            "percentage": 7.59,
+            "percentageTokens": 7.68,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/Settings.jsx": {
+            "lines": 417,
+            "tokens": 4917,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 36,
+            "duplicatedTokens": 398,
+            "percentage": 8.63,
+            "percentageTokens": 8.09,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/PublicLeadForm.jsx": {
+            "lines": 170,
+            "tokens": 2087,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/OnboardingWizard.jsx": {
+            "lines": 330,
+            "tokens": 2906,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 24,
+            "duplicatedTokens": 258,
+            "percentage": 7.27,
+            "percentageTokens": 8.88,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/NextCallReminder.jsx": {
+            "lines": 20,
+            "tokens": 201,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/MondayTable.jsx": {
+            "lines": 149,
+            "tokens": 1472,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/MainLayout.jsx": {
+            "lines": 138,
+            "tokens": 2219,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/LoginPage.jsx": {
+            "lines": 177,
+            "tokens": 2025,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/LandingPage.jsx": {
+            "lines": 142,
+            "tokens": 1952,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/FloatingWhatsApp.jsx": {
+            "lines": 58,
+            "tokens": 421,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/FileUploader.jsx": {
+            "lines": 292,
+            "tokens": 3177,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/Dashboard.jsx": {
+            "lines": 315,
+            "tokens": 3522,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/CSVImportModal.jsx": {
+            "lines": 295,
+            "tokens": 3624,
+            "sources": 1,
+            "clones": 8,
+            "duplicatedLines": 96,
+            "duplicatedTokens": 1334,
+            "percentage": 32.54,
+            "percentageTokens": 36.81,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/ConversationLog.jsx": {
+            "lines": 147,
+            "tokens": 1621,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/ClientProfile.jsx": {
+            "lines": 216,
+            "tokens": 2322,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/AnalyticsSection.jsx": {
+            "lines": 109,
+            "tokens": 1364,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/AdminDashboard.jsx": {
+            "lines": 383,
+            "tokens": 4891,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 32,
+            "duplicatedTokens": 382,
+            "percentage": 8.36,
+            "percentageTokens": 7.81,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/main.jsx": {
+            "lines": 12,
+            "tokens": 89,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/App.jsx": {
+            "lines": 51,
+            "tokens": 670,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 3788,
+          "tokens": 43571,
+          "sources": 22,
+          "clones": 7,
+          "duplicatedLines": 100,
+          "duplicatedTokens": 1256,
+          "percentage": 2.64,
+          "percentageTokens": 2.88,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "css": {
+        "sources": {
+          "src/components/SetupWizard.css": {
+            "lines": 128,
+            "tokens": 797,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/PublicLeadForm.css": {
+            "lines": 327,
+            "tokens": 2155,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/OnboardingWizard.css": {
+            "lines": 412,
+            "tokens": 2773,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/LoginPage.css": {
+            "lines": 245,
+            "tokens": 1892,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/LandingPage.css": {
+            "lines": 449,
+            "tokens": 2879,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/components/Kanban.css": {
+            "lines": 190,
+            "tokens": 1380,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/index.css": {
+            "lines": 247,
+            "tokens": 1725,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 1998,
+          "tokens": 13601,
+          "sources": 7,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 7722,
+      "tokens": 80858,
+      "sources": 54,
+      "clones": 12,
+      "duplicatedLines": 141,
+      "duplicatedTokens": 2036,
+      "percentage": 1.83,
+      "percentageTokens": 2.52,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": [
+    {
+      "format": "jsx",
+      "lines": 13,
+      "fragment": ";\r\n\r\n    const handleLogoUpload = async (e) => {\r\n        const file = e.target.files[0];\r\n        if (!file) return;\r\n\r\n        setLogoLoading(true);\r\n        try {\r\n            const fileExt = file.name.split('.').pop();\r\n            const fileName = `${session.user.id}-${Math.random()}.${fileExt}`;\r\n            const filePath = `${fileName}`;\r\n\r\n            // Upload to Supabase Storage",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\Settings.jsx",
+        "start": 51,
+        "end": 63,
+        "startLoc": {
+          "line": 51,
+          "column": 2,
+          "position": 652
+        },
+        "endLoc": {
+          "line": 63,
+          "column": 30,
+          "position": 792
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\SetupWizard.jsx",
+        "start": 22,
+        "end": 34,
+        "startLoc": {
+          "line": 22,
+          "column": 2,
+          "position": 267
+        },
+        "endLoc": {
+          "line": 34,
+          "column": 6,
+          "position": 395
+        }
+      }
+    },
+    {
+      "format": "jsx",
+      "lines": 25,
+      "fragment": ");\n\n    const handleLogoUpload = async (e) => {\n        const file = e.target.files[0];\n        if (!file) return;\n\n        setLogoLoading(true);\n        try {\n            const fileExt = file.name.split('.').pop();\n            const fileName = `${session.user.id}-${Math.random()}.${fileExt}`;\n            const filePath = `${fileName}`;\n\n            const { error: uploadError } = await supabase.storage\n                .from('logos')\n                .upload(filePath, file);\n\n            if (uploadError) throw uploadError;\n\n            const { data: { publicUrl } } = supabase.storage\n                .from('logos')\n                .getPublicUrl(filePath);\n\n            setFormData(prev => ({ ...prev, logoUrl: publicUrl }));\n        } catch (err) {\n            console.error(err",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\OnboardingWizard.jsx",
+        "start": 31,
+        "end": 55,
+        "startLoc": {
+          "line": 31,
+          "column": 2,
+          "position": 309
+        },
+        "endLoc": {
+          "line": 55,
+          "column": 4,
+          "position": 567
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\Settings.jsx",
+        "start": 51,
+        "end": 40,
+        "startLoc": {
+          "line": 51,
+          "column": 2,
+          "position": 651
+        },
+        "endLoc": {
+          "line": 40,
+          "column": 22,
+          "position": 514
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 11,
+      "fragment": ": e.target.value})}\n                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}\n                                    >\n                                        <option value=\"\">— בחר עמודה —</option>\n                                        {headers.map(h => <option key={h} value={h}>{h}</option>)}\n                                    </select>\n                                </div>\n                                <div className=\"form-group\">\n                                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>דוא\"ל</label>\n                                    <select \n                                        value={mapping.email",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 238,
+        "end": 248,
+        "startLoc": {
+          "line": 238,
+          "column": 7,
+          "position": 2926
+        },
+        "endLoc": {
+          "line": 248,
+          "column": 6,
+          "position": 3080
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 227,
+        "end": 237,
+        "startLoc": {
+          "line": 227,
+          "column": 9,
+          "position": 2749
+        },
+        "endLoc": {
+          "line": 237,
+          "column": 6,
+          "position": 2907
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 11,
+      "fragment": ": e.target.value})}\n                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}\n                                    >\n                                        <option value=\"\">— בחר עמודה —</option>\n                                        {headers.map(h => <option key={h} value={h}>{h}</option>)}\n                                    </select>\n                                </div>\n                                <div className=\"form-group\">\n                                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>שם החברה</label>\n                                    <select \n                                        value={mapping.company",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 249,
+        "end": 259,
+        "startLoc": {
+          "line": 249,
+          "column": 7,
+          "position": 3099
+        },
+        "endLoc": {
+          "line": 259,
+          "column": 8,
+          "position": 3255
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 227,
+        "end": 237,
+        "startLoc": {
+          "line": 227,
+          "column": 9,
+          "position": 2749
+        },
+        "endLoc": {
+          "line": 237,
+          "column": 6,
+          "position": 2907
+        }
+      }
+    },
+    {
+      "format": "jsx",
+      "lines": 17,
+      "fragment": "const parseCSVLine = (line) => {\n                    const result = [];\n                    let current = '';\n                    let inQuotes = false;\n                    for (let i = 0; i < line.length; i++) {\n                        const char = line[i];\n                        if (char === '\"') inQuotes = !inQuotes;\n                        else if (char === ',' && !inQuotes) {\n                            result.push(current.trim());\n                            current = '';\n                        } else current += char;\n                    }\n                    result.push(current.trim());\n                    return result;\n                };\n\n                // Fetch existing phones for duplicate check",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 98,
+        "end": 114,
+        "startLoc": {
+          "line": 98,
+          "column": 17,
+          "position": 1095
+        },
+        "endLoc": {
+          "line": 114,
+          "column": 45,
+          "position": 1281
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 37,
+        "end": 53,
+        "startLoc": {
+          "line": 37,
+          "column": 13,
+          "position": 462
+        },
+        "endLoc": {
+          "line": 53,
+          "column": 6,
+          "position": 648
+        }
+      }
+    },
+    {
+      "format": "jsx",
+      "lines": 12,
+      "fragment": "*</label>\n                                    <select \n                                        value={mapping.phone} \n                                        onChange={(e) => setMapping({...mapping, phone: e.target.value})}\n                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}\n                                    >\n                                        <option value=\"\">— בחר עמודה —</option>\n                                        {headers.map(h => <option key={h} value={h}>{h}</option>)}\n                                    </select>\n                                </div>\n                                <div className=\"form-group\">\n                                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>דוא\"ל",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 235,
+        "end": 246,
+        "startLoc": {
+          "line": 235,
+          "column": 2,
+          "position": 2893
+        },
+        "endLoc": {
+          "line": 246,
+          "column": 6,
+          "position": 3066
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 224,
+        "end": 235,
+        "startLoc": {
+          "line": 224,
+          "column": 2,
+          "position": 2716
+        },
+        "endLoc": {
+          "line": 235,
+          "column": 5,
+          "position": 2889
+        }
+      }
+    },
+    {
+      "format": "jsx",
+      "lines": 12,
+      "fragment": "</label>\n                                    <select \n                                        value={mapping.email} \n                                        onChange={(e) => setMapping({...mapping, email: e.target.value})}\n                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}\n                                    >\n                                        <option value=\"\">— בחר עמודה —</option>\n                                        {headers.map(h => <option key={h} value={h}>{h}</option>)}\n                                    </select>\n                                </div>\n                                <div className=\"form-group\">\n                                    <label style={{ display: 'block', fontWeight: 700, marginBottom: '8px' }}>שם",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 246,
+        "end": 257,
+        "startLoc": {
+          "line": 246,
+          "column": 6,
+          "position": 3067
+        },
+        "endLoc": {
+          "line": 257,
+          "column": 3,
+          "position": 3239
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 224,
+        "end": 235,
+        "startLoc": {
+          "line": 224,
+          "column": 2,
+          "position": 2717
+        },
+        "endLoc": {
+          "line": 235,
+          "column": 5,
+          "position": 2889
+        }
+      }
+    },
+    {
+      "format": "jsx",
+      "lines": 11,
+      "fragment": "</label>\n                                    <select \n                                        value={mapping.company} \n                                        onChange={(e) => setMapping({...mapping, company: e.target.value})}\n                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}\n                                    >\n                                        <option value=\"\">— בחר עמודה —</option>\n                                        {headers.map(h => <option key={h} value={h}>{h}</option>)}\n                                    </select>\n                                </div>\n                            </",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 257,
+        "end": 267,
+        "startLoc": {
+          "line": 257,
+          "column": 6,
+          "position": 3242
+        },
+        "endLoc": {
+          "line": 267,
+          "column": 3,
+          "position": 3378
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\CSVImportModal.jsx",
+        "start": 224,
+        "end": 234,
+        "startLoc": {
+          "line": 224,
+          "column": 2,
+          "position": 2717
+        },
+        "endLoc": {
+          "line": 234,
+          "column": 2,
+          "position": 2853
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 7,
+      "fragment": " }}>\n                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>\n                        <div>\n                            <p style={{ color: 'var(--clr-text-secondary)', fontSize: '1.1rem', fontWeight: 600, margin: '0 0 10px 0' }}>לידים שנוצרו במערכת (גלובלי)</p>\n                            <h3 style={{ fontSize: '3rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>{totalLeads}</h3>\n                        </div>\n                        <div style={{ backgroundColor: '#f0fdf4'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\AdminDashboard.jsx",
+        "start": 237,
+        "end": 243,
+        "startLoc": {
+          "line": 237,
+          "column": 20,
+          "position": 2652
+        },
+        "endLoc": {
+          "line": 243,
+          "column": 10,
+          "position": 2787
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\AdminDashboard.jsx",
+        "start": 225,
+        "end": 231,
+        "startLoc": {
+          "line": 225,
+          "column": 20,
+          "position": 2445
+        },
+        "endLoc": {
+          "line": 231,
+          "column": 10,
+          "position": 2580
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 7,
+      "fragment": " }}>\n                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>\n                        <div>\n                            <p style={{ color: 'var(--clr-text-secondary)', fontSize: '1.1rem', fontWeight: 600, margin: '0 0 10px 0' }}>ממתינים לאישור והפעלה</p>\n                            <h3 style={{ fontSize: '3rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>{pendingCount}</h3>\n                        </div>\n                        <div style={{ backgroundColor: '#fef3c7'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\AdminDashboard.jsx",
+        "start": 249,
+        "end": 255,
+        "startLoc": {
+          "line": 249,
+          "column": 20,
+          "position": 2859
+        },
+        "endLoc": {
+          "line": 255,
+          "column": 10,
+          "position": 2990
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\AdminDashboard.jsx",
+        "start": 225,
+        "end": 231,
+        "startLoc": {
+          "line": 225,
+          "column": 20,
+          "position": 2445
+        },
+        "endLoc": {
+          "line": 231,
+          "column": 10,
+          "position": 2580
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 10,
+      "fragment": " }}>שולם הקמה (₪1899)</th>\n                            <th style={{ padding: '20px 24px', fontWeight: 700, color: '#475569', textAlign: 'center' }}>מנוי חודשי פעיל</th>\n                            <th style={{ padding: '20px 24px', fontWeight: 700, color: '#475569', textAlign: 'center' }}>מכסת AI</th>\n                            <th style={{ padding: '20px 24px', fontWeight: 700, color: '#475569', textAlign: 'center' }}>שימוש AI</th>\n                            <th style={{ padding: '20px 24px', fontWeight: 700, color: '#475569', textAlign: 'center' }}>פעולות אדמין</th>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        {profiles.map(profile => (\n                            <tr key={profile",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\AdminDashboard.jsx",
+        "start": 282,
+        "end": 291,
+        "startLoc": {
+          "line": 282,
+          "column": 9,
+          "position": 3504
+        },
+        "endLoc": {
+          "line": 291,
+          "column": 8,
+          "position": 3708
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\AdminDashboard.jsx",
+        "start": 281,
+        "end": 284,
+        "startLoc": {
+          "line": 281,
+          "column": 10,
+          "position": 3466
+        },
+        "endLoc": {
+          "line": 284,
+          "column": 2,
+          "position": 3567
+        }
+      }
+    },
+    {
+      "format": "jsx",
+      "lines": 17,
+      "fragment": "};\n\n        // Optimistic update\n        setProfiles(prev => prev.map(p => p.id === profile.id ? { ...p, settings: updatedSettings } : p));\n\n        try {\n            const { error } = await supabase\n                .from('profiles')\n                .update({ settings: updatedSettings })\n                .eq('id', profile.id);\n\n            if (error) {\n                setProfiles(prev => prev.map(p => p.id === profile.id ? { ...p, settings: currentSettings } : p));\n                throw error;\n            }\n        } catch (error) {\n            console.error('Error updating AI limit:'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src\\components\\AdminDashboard.jsx",
+        "start": 123,
+        "end": 139,
+        "startLoc": {
+          "line": 123,
+          "column": 2,
+          "position": 1390
+        },
+        "endLoc": {
+          "line": 139,
+          "column": 27,
+          "position": 1581
+        }
+      },
+      "secondFile": {
+        "name": "src\\components\\AdminDashboard.jsx",
+        "start": 101,
+        "end": 117,
+        "startLoc": {
+          "line": 101,
+          "column": 2,
+          "position": 1112
+        },
+        "endLoc": {
+          "line": 117,
+          "column": 17,
+          "position": 1306
+        }
+      }
+    }
+  ]
+}

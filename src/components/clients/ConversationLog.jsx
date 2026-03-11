@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { Send, FileText, Loader2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function ConversationLog({ clientId }) {
     const [logs, setLogs] = useState([]);
@@ -9,10 +10,8 @@ function ConversationLog({ clientId }) {
     const [isFetching, setIsFetching] = useState(true);
 
     useEffect(() => {
-        if (clientId) {
-            fetchLogs();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (!clientId || String(clientId).startsWith('temp_')) return;
+        fetchLogs();
     }, [clientId]);
 
     const fetchLogs = async () => {
@@ -54,7 +53,7 @@ function ConversationLog({ clientId }) {
             setNewNote('');
         } else {
             console.error('Failed to add log:', error);
-            alert("שגיאה בהוספת הערה (יכול להיות שהטבלה עדיין לא נוצרה).");
+            alert("שגיאה בהוספת הערה.");
         }
         setIsLoading(false);
     };
@@ -82,21 +81,8 @@ function ConversationLog({ clientId }) {
                 <button 
                     onClick={handleAddLog} 
                     disabled={isLoading || !newNote.trim()}
-                    style={{ 
-                        background: 'linear-gradient(135deg, #d97706, #ca8a04)', 
-                        color: 'white', 
-                        border: 'none', 
-                        borderRadius: '12px', 
-                        padding: '0 20px', 
-                        cursor: (isLoading || !newNote.trim()) ? 'not-allowed' : 'pointer', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        transition: 'all 0.2s',
-                        opacity: (isLoading || !newNote.trim()) ? 0.6 : 1,
-                        boxShadow: '0 4px 15px rgba(217, 119, 6, 0.3)'
-                    }}
-                    title="שלח (Ctrl + Enter)"
+                    className="btn-primary"
+                    style={{ padding: '0 20px' }}
                 >
                     {isLoading ? <Loader2 size={20} className="spin" /> : <Send size={20} />}
                 </button>
